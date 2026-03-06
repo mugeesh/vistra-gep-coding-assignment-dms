@@ -21,7 +21,7 @@ export class DocumentsController {
     }
 
     @Get()
-    async list(
+    async findAll(
         @Query('folderId', new ParseIntPipe({optional: true}))
         folderId?: number,
     ) {
@@ -31,7 +31,7 @@ export class DocumentsController {
     @Post()
     async create(@Body() dto: CreateDocumentDto) {
         try {
-            return await this.documentsService.create({
+            return await this.documentsService.createDocument({
                 title: dto.title,
                 folderId: dto.folderId ?? null,
                 description: dto.description,
@@ -61,15 +61,14 @@ export class DocumentsController {
     }
 
     @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id: number) {
+    async remove(@Param('id', ParseIntPipe) id: number) {
         try {
             await this.documentsService.delete(id);
-            // Option A: return 204 implicitly (recommended)
-            // Option B: return success message
-            // return { message: 'Document deleted successfully' };
         } catch (err) {
-            if (err instanceof BadRequestException) throw err;
-            console.error('[DocumentsController.delete]', err);
+            if (err instanceof BadRequestException) {
+                throw err;
+            }
+            console.error('[DocumentsController.remove]', err);
             throw new InternalServerErrorException();
         }
     }

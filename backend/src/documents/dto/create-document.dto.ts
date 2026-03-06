@@ -17,13 +17,13 @@ export class CreateDocumentDto {
     description?: string;
 
     @IsOptional()
-    @Type(() => Number)                    // ← key line: "123" → 123
+    @Type(() => Number)
     @IsInt({ message: 'folderId must be a positive integer' })
     @Min(1, { message: 'folderId must be ≥ 1' })
     folderId?: number | null;
 
     @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
     @MaxLength(MAX_STRING_LENGTH)
     fileName?: string;

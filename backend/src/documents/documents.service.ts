@@ -12,7 +12,7 @@ export class DocumentsService {
     });
   }
 
-  async create(input: {
+  async createDocument(input: {
     title: string;
     folderId: number | null;
     description?: string;
