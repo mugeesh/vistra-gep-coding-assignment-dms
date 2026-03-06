@@ -6,7 +6,7 @@ const MAX_STRING_LENGTH = 191; // consistent name, utf8mb4 index limit
 export class CreateDocumentDto {
     @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
     @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Title is required' })
     @MaxLength(MAX_STRING_LENGTH)
     title!: string;
 

@@ -10,7 +10,7 @@ function trimString(value: unknown): string {
 export class UpdateFolderDto {
   @Transform(({ value }) => trimString(value))
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'name is required' })
   @MaxLength(NAME_MAX_LENGTH)
   name!: string;
 }

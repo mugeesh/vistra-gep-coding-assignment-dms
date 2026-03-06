@@ -7,4 +7,3 @@ import { ItemsService } from './items.service';
   providers: [ItemsService],
 })
 export class ItemsModule {}
-

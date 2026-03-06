@@ -6,7 +6,7 @@ const NAME_MAX_LENGTH = 191;
 export class CreateFolderDto {
     @Transform(({value}) => (typeof value === 'string' ? value.trim() : value))
     @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Name is required' })
     @MaxLength(NAME_MAX_LENGTH)
     name!: string;
 
