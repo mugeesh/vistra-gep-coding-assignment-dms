@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Folder {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(255)  // Add length limit
+  parentId  Int?      @map("parent_id")
+  
+  // Relations
+  parent    Folder?   @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Folder[]  @relation("FolderHierarchy")
+  documents Document[]
+  
+  // Timestamps
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  // Indexes
+  @@index([parentId])
+  @@index([name])  // Add index for searching folders by name
+  @@map("folders")  // Use plural table names (convention)
+}
+
+model Document {
+  id          Int      @id @default(autoincrement())
+  folderId    Int?     @map("folder_id")
+  title       String   @db.VarChar(255)  // Add length limit
+  description String?  @db.Text  // Explicitly use TEXT for longer content
+  fileName    String?  @map("file_name") @db.VarChar(255)
+  mimeType    String?  @map("mime_type") @db.VarChar(100)
+  sizeBytes   Int      @default(0) @map("size_bytes")  // Changed to Int with default 0
+  
+  // Relations
+  folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  // Indexes
+  @@index([folderId])
+  @@index([title])      // For search by title
+  @@index([createdAt])  // For sorting by date
+  @@map("documents")    // Use plural table names (convention)
+}

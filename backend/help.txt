@@ -1,0 +1,15 @@
+
+node 22
+
+
+npm install
+npm run prisma:fresh
+npm run prisma:seed
+
+
+swagger
+
+http://localhost:3001/api/docs
+
+
+need to add swagger picture etc
