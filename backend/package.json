@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "dev:all": "./../start-dev.sh",
+    "dev:reset": "docker compose down -v && ../start-dev.sh",
     "prisma:fresh": "npx prisma migrate reset --force && npx prisma migrate dev --name init",
     "prisma:dev": "npx prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",
