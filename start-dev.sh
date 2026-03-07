@@ -17,6 +17,7 @@ if [[ "$(basename "$(pwd)")" != "backend" ]]; then
 else
   echo "Already in backend/ directory — skipping cd."
 fi
+cp env .env
 
 echo "====================================="
 echo "  DMS Backend - Dev Setup"

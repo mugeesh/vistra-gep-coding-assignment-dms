@@ -1,0 +1,2 @@
+DATABASE_URL="mysql://root:rootPassword@localhost:3306/document_management_systems"
+ENABLE_SWAGGER=true
