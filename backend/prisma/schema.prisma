@@ -12,12 +12,12 @@ model Folder {
   id        Int       @id @default(autoincrement())
   name      String    @db.VarChar(255)
   parentId  Int?      @map("parent_id")
-  
+  createdBy String   @default("-") @map("created_by") @db.VarChar(255)
   // Relations
   parent    Folder?   @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children  Folder[]  @relation("FolderHierarchy")
   documents Document[]
-  
+
   // Timestamps
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
@@ -26,6 +26,7 @@ model Folder {
   @@index([parentId])
   @@index([name])  // Add index for searching folders by name
   @@map("folders")  // Use plural table names (convention)
+  @@index([createdBy])
 }
 
 model Document {
@@ -40,7 +41,7 @@ model Document {
 
   // Relations
   folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  
+
   // Timestamps
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)

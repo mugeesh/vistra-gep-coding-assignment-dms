@@ -29,7 +29,7 @@ export async function getItems(params: GetItemsParams): Promise<PaginatedItemsRe
   const base = getBaseUrl();
   if (typeof window !== 'undefined' && !base) {
     throw new Error(
-      'API base URL is missing. Set NEXT_PUBLIC_API_BASE_URL or BACKEND_URL in the root .env.',
+      'API base URL is missing. Set NEXT_PUBLIC_API_BASE_URL or BACKEND_URL in the root .env.example.',
     );
   }
   const {
@@ -57,7 +57,7 @@ export async function getItems(params: GetItemsParams): Promise<PaginatedItemsRe
   } catch (e) {
     const msg =
       e instanceof Error && e.message === 'Failed to fetch'
-        ? 'Cannot reach the API (network or CORS). Ensure the API is running, BACKEND_URL / NEXT_PUBLIC_API_BASE_URL matches it, and FRONTEND_URL in .env includes your browser origin (e.g. http://192.168.0.17:3000 if you use the network URL).'
+        ? 'Cannot reach the API (network or CORS). Ensure the API is running, BACKEND_URL / NEXT_PUBLIC_API_BASE_URL matches it, and FRONTEND_URL in .env.example includes your browser origin (e.g. http://192.168.0.17:3000 if you use the network URL).'
         : e instanceof Error
           ? e.message
           : 'Failed to load items';

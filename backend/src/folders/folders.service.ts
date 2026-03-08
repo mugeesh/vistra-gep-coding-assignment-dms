@@ -19,7 +19,7 @@ export class FoldersService {
         });
     }
 
-  async create(input: { name: string; parentId: number | null }) {
+  async create(input: { name: string; parentId: number | null;  createdBy: string | null }) {
     if (input.parentId !== null) {
       const parent = await this.prisma.folder.findUnique({
         where: { id: input.parentId },
@@ -34,6 +34,7 @@ export class FoldersService {
       data: {
         name: input.name,
         parentId: input.parentId,
+        createdBy: input.createdBy,
       },
     });
   }

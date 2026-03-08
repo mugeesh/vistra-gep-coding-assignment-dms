@@ -32,6 +32,7 @@ export class FoldersController {
             return await this.foldersService.create({
                 name: dto.name,
                 parentId: dto.parentId ?? null,
+                createdBy: dto.createdBy ?? null,
             });
         } catch (err) {
             if (err instanceof BadRequestException) {

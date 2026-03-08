@@ -27,7 +27,7 @@ export class PrismaService
         const databaseUrl = process.env.DATABASE_URL;
         if (!databaseUrl) {
             throw new Error(
-                'DATABASE_URL is missing. Ensure apps/api/.env is set (see .env.example).',
+                'DATABASE_URL is missing. Ensure apps/api/.env.example is set (see .env.example.example).',
             );
         }
 

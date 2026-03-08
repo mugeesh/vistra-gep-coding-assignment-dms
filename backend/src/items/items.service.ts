@@ -71,6 +71,7 @@ export class ItemsService {
                     select: {
                         id: true,
                         name: true,
+                        createdBy: true,
                         parentId: true,
                         createdAt: true,
                         updatedAt: true,
@@ -107,6 +108,7 @@ export class ItemsService {
                     select: {
                         id: true,
                         name: true,
+                        createdBy: true,
                         parentId: true,
                         createdAt: true,
                         updatedAt: true,
@@ -136,6 +138,7 @@ export class ItemsService {
             kind: 'folder',
             id: f.id,
             name: f.name,
+            createdBy: f.createdBy,
             parentId: f.parentId,
             createdAt: f.createdAt.toISOString(),
             updatedAt: f.updatedAt.toISOString(),

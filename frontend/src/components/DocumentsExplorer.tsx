@@ -13,7 +13,7 @@ import {
 } from '@/lib/api';
 import type { AddDocumentFormValues } from './AddDocumentForm';
 import type { AddFolderFormValues } from './AddFolderForm';
-import AddDocumentForm from './AddDocumentForm';
+import { AddDocumentForm } from './AddDocumentForm';
 import { AddFolderForm } from './AddFolderForm';
 import { RenameModal } from './RenameModal';
 
@@ -149,9 +149,10 @@ export function DocumentsExplorer() {
         await createFolder({
             name: values.name.trim(),
             parentId: currentParentId,
+            createdBy: values.createdBy.trim(),
         });
         setFolderModalOpen(false);
-        loadItems();
+        await loadItems();
     };
 
     const handleCreateDocument = async (values: AddDocumentFormValues) => {
@@ -165,7 +166,7 @@ export function DocumentsExplorer() {
             createdBy: values.createdBy?.trim() ?? '—',
         });
         setDocumentModalOpen(false);
-        loadItems();
+        await loadItems();
     };
 
     const handleRename = async (value: string) => {
@@ -177,7 +178,7 @@ export function DocumentsExplorer() {
                 await updateDocument(renameModal.id, { title: value.trim() });
             }
             setRenameModal(null);
-            loadItems();
+            await loadItems();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to rename');
         }
@@ -192,7 +193,7 @@ export function DocumentsExplorer() {
                 await deleteDocument(deleteConfirm.id);
             }
             setDeleteConfirm(null);
-            loadItems();
+            await loadItems();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to delete');
         }

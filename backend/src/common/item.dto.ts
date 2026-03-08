@@ -33,6 +33,9 @@ export class FolderItem {
     @ApiProperty({ example: 'Documents' })
     name: string;
 
+    @ApiPropertyOptional({ example: 'John Green' })
+    createdBy: string | null
+
     @ApiPropertyOptional({ example: null })
     parentId: number | null;
 
@@ -41,8 +44,6 @@ export class FolderItem {
 
     @ApiProperty({ example: '2025-01-02T00:00:00.000Z' })
     updatedAt: string;
-
-
 }
 
 export class DocumentItem {

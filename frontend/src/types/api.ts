@@ -22,6 +22,11 @@ export interface Document {
     kind: 'document';
 }
 
+export interface ItemsResponse {
+    folders: Folder[];
+    documents: Document[];
+}
+
 export type ItemsSortBy = 'name' | 'createdAt' | 'size' | 'type';
 
 export interface FolderItem {
@@ -54,6 +59,7 @@ export type ListItem = FolderItem | DocumentItem;
 export interface CreateFolderPayload {
     name: string;
     parentId?: number | null;
+    createdBy?: string | null;
 }
 
 export interface CreateDocumentPayload {

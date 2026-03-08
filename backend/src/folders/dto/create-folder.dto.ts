@@ -15,4 +15,10 @@ export class CreateFolderDto {
     @Min(1, {message: 'parentId must be a positive integer starting from 1'})
     @Type(() => Number)
     parentId?: number | null;
+
+    @IsOptional()
+    @Transform(({value}) => (typeof value === 'string' ? value.trim() : value))
+    @IsString()
+    @MaxLength(NAME_MAX_LENGTH)
+    createdBy?: string | null;
 }

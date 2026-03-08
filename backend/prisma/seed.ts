@@ -4,7 +4,7 @@ import {PrismaClient} from "@prisma/client";
 import {PrismaMariaDb} from "@prisma/adapter-mariadb";
 
 // Load environment variables
-config({path: join(process.cwd(), "..", ".env")});
+config({path: join(process.cwd(), "..", ".env.example")});
 config();
 
 interface DatabaseConfig {
@@ -408,7 +408,7 @@ async function main() {
     console.log('...Seeding database...')
     const databaseUrl = process.env.DATABASE_URL;
     if (!databaseUrl) {
-        throw new Error("DATABASE_URL is missing. Set it in the repo root .env or in apps/api/.env");
+        throw new Error("DATABASE_URL is missing. Set it in the repo root .env.example or in apps/api/.env.example");
     }
 
     const db = getDatabaseConfigFromUrl(databaseUrl);

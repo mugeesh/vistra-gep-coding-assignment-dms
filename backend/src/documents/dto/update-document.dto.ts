@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {IsNotEmpty, IsOptional, IsString, MaxLength} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 const MAX_STRING_LENGTH = 191;
@@ -9,4 +9,9 @@ export class UpdateDocumentDto {
     @IsNotEmpty()
     @MaxLength(MAX_STRING_LENGTH)
     title!: string;
+
+    @IsOptional()
+    @IsString()
+    @MaxLength(MAX_STRING_LENGTH)
+    createdBy!: string;
 }

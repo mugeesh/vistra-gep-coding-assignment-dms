@@ -3,11 +3,13 @@ CREATE TABLE `folders` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `parent_id` INTEGER NULL,
+    `created_by` VARCHAR(255) NOT NULL DEFAULT '-',
     `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `updated_at` TIMESTAMP(0) NOT NULL,
 
     INDEX `folders_parent_id_idx`(`parent_id`),
     INDEX `folders_name_idx`(`name`),
+    INDEX `folders_created_by_idx`(`created_by`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -20,7 +22,7 @@ CREATE TABLE `documents` (
     `file_name` VARCHAR(255) NULL,
     `mime_type` VARCHAR(100) NULL,
     `size_bytes` INTEGER NOT NULL DEFAULT 0,
-    `created_by` VARCHAR(255) NULL,
+    `created_by` VARCHAR(255) NOT NULL DEFAULT '-',
     `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `updated_at` TIMESTAMP(0) NOT NULL,
 

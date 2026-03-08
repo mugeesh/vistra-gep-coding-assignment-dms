@@ -18,11 +18,11 @@ else
   echo "Already in backend/ directory — skipping cd."
 fi
 
-# Copy env file if it doesn't exist
+# Copy env.example file if it doesn't exist
 if [[ ! -f ".env" ]]; then
-  if [[ -f "env" ]]; then
+  if [[ -f ".env.example" ]]; then
     echo "Copying env to .env..."
-    cp env .env
+    cp .env.example .env
   else
     echo "Warning: 'env' file not found. You may need to create .env manually."
   fi
