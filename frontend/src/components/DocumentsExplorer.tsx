@@ -13,7 +13,7 @@ import {
 } from '@/lib/api';
 import type { AddDocumentFormValues } from './AddDocumentForm';
 import type { AddFolderFormValues } from './AddFolderForm';
-import { AddDocumentForm } from './AddDocumentForm';
+import AddDocumentForm from './AddDocumentForm';
 import { AddFolderForm } from './AddFolderForm';
 import { RenameModal } from './RenameModal';
 
@@ -28,12 +28,6 @@ interface HistoryEntry {
 }
 
 const PAGE_SIZE_OPTIONS = [5, 10, 25, 50];
-const SORT_OPTIONS: { value: ItemsSortBy; label: string }[] = [
-    { value: 'name', label: 'Name' },
-    { value: 'createdAt', label: 'Date created' },
-    { value: 'size', label: 'File size' },
-    { value: 'type', label: 'File type' },
-];
 
 function formatFileSize(bytes: number | null): string {
     if (bytes == null || bytes === 0) return '—';
@@ -65,6 +59,7 @@ export function DocumentsExplorer() {
         { parentId: null, breadcrumb: [{ id: null, name: 'Root' }] },
     ]);
     const [currentIndex, setCurrentIndex] = useState(0);
+
     const [data, setData] = useState<{
         items: ListItem[];
         total: number;
@@ -72,22 +67,28 @@ export function DocumentsExplorer() {
         pageSize: number;
         totalPages: number;
     }>({ items: [], total: 0, page: 1, pageSize: 10, totalPages: 1 });
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
     const [folderModalOpen, setFolderModalOpen] = useState(false);
     const [documentModalOpen, setDocumentModalOpen] = useState(false);
+
     const [search, setSearch] = useState('');
     const [searchDebounced, setSearchDebounced] = useState('');
     const [globalSearch, setGlobalSearch] = useState(false);
+
     const [sortBy, setSortBy] = useState<ItemsSortBy>('name');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [pageSize, setPageSize] = useState(10);
     const [page, setPage] = useState(1);
+
     const [deleteConfirm, setDeleteConfirm] = useState<{
         kind: 'folder' | 'document';
         id: number;
         name: string;
     } | null>(null);
+
     const [renameModal, setRenameModal] = useState<{
         kind: 'folder' | 'document';
         id: number;
@@ -97,10 +98,16 @@ export function DocumentsExplorer() {
     const currentParentId = history[currentIndex]?.parentId ?? null;
     const breadcrumb = history[currentIndex]?.breadcrumb ?? [{ id: null, name: 'Root' }];
 
+    // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => setSearchDebounced(search.trim()), 400);
         return () => clearTimeout(timer);
     }, [search]);
+
+    // Reset page when filters/sort/parent changes
+    useEffect(() => {
+        setPage(1);
+    }, [currentParentId, sortBy, sortOrder, pageSize, searchDebounced, globalSearch]);
 
     const loadItems = useCallback(async () => {
         setLoading(true);
@@ -131,7 +138,11 @@ export function DocumentsExplorer() {
         const newBreadcrumb = [...breadcrumb, { id: folderId, name: folderName }];
         setHistory((prev) => [...prev.slice(0, currentIndex + 1), { parentId: folderId, breadcrumb: newBreadcrumb }]);
         setCurrentIndex((prev) => prev + 1);
-        setPage(1);
+    };
+
+    const goToHistoryIndex = (targetIndex: number) => {
+        if (targetIndex < 0 || targetIndex >= history.length) return;
+        setCurrentIndex(targetIndex);
     };
 
     const handleCreateFolder = async (values: AddFolderFormValues) => {
@@ -150,7 +161,8 @@ export function DocumentsExplorer() {
             description: values.description?.trim(),
             fileName: values.fileName?.trim() || `${values.title.trim()}.pdf`,
             mimeType: values.mimeType?.trim() || 'application/pdf',
-            sizeBytes: values.sizeBytes || 1024 * 42,
+            sizeBytes: values.sizeBytes,           // now allowed to be undefined
+            createdBy: values.createdBy?.trim() ?? '—',
         });
         setDocumentModalOpen(false);
         loadItems();
@@ -186,8 +198,14 @@ export function DocumentsExplorer() {
         }
     };
 
-    const canGoBack = currentIndex > 0;
-    const canGoForward = currentIndex < history.length - 1;
+    const toggleSort = (field: ItemsSortBy) => {
+        if (sortBy === field) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(field);
+            setSortOrder('asc');
+        }
+    };
 
     return (
         <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
@@ -211,208 +229,231 @@ export function DocumentsExplorer() {
                     </div>
                 </div>
 
-                {/* Breadcrumb + controls */}
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-                    {/* Left side controls */}
-                    <div className="flex flex-wrap items-center gap-4">
-                        <input
-                            type="search"
-                            placeholder="Search..."
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setPage(1);
-                            }}
-                            className="w-64 rounded border border-gray-300 bg-white px-4 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                        />
+                {/* Navigation + Breadcrumb + Filters */}
+                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    {/* Left: Navigation + Breadcrumb */}
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => goToHistoryIndex(currentIndex - 1)}
+                                disabled={currentIndex <= 0}
+                                className="flex h-9 w-9 items-center justify-center rounded border disabled:opacity-50 dark:border-gray-700"
+                            >
+                                ←
+                            </button>
+                            <button
+                                onClick={() => goToHistoryIndex(currentIndex + 1)}
+                                disabled={currentIndex >= history.length - 1}
+                                className="flex h-9 w-9 items-center justify-center rounded border disabled:opacity-50 dark:border-gray-700"
+                            >
+                                →
+                            </button>
+                            <button
+                                onClick={() => goToHistoryIndex(0)}
+                                disabled={currentIndex === 0}
+                                className="flex h-9 w-9 items-center justify-center rounded border disabled:opacity-50 dark:border-gray-700"
+                            >
+                                🏠
+                            </button>
+                        </div>
 
-                        <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto text-sm">
+                            {breadcrumb.map((crumb, idx) => (
+                                <span key={crumb.id ?? 'root'} className="flex items-center">
+                  {idx > 0 && <span className="mx-1.5 text-gray-400">/</span>}
+                                    <button
+                                        onClick={() => goToHistoryIndex(idx)}
+                                        className={`hover:underline ${
+                                            idx === currentIndex ? 'font-semibold' : 'text-blue-600 dark:text-blue-400'
+                                        }`}
+                                    >
+                    {crumb.name}
+                  </button>
+                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Right: Search + filters */}
+                    <div className="flex flex-wrap items-center gap-4">
+                        <div className="relative min-w-[220px] flex-1">
+                            <input
+                                type="text"
+                                placeholder="Search documents..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full rounded-lg border px-4 py-2 pl-10 text-sm focus:border-blue-500 focus:ring-1 dark:border-gray-700 dark:bg-gray-800"
+                            />
+                            <svg className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+
+                        <label className="flex items-center gap-2 text-sm">
                             <input
                                 type="checkbox"
                                 checked={globalSearch}
-                                onChange={(e) => {
-                                    setGlobalSearch(e.target.checked);
-                                    setPage(1);
-                                }}
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                onChange={(e) => setGlobalSearch(e.target.checked)}
+                                className="h-4 w-4 rounded border-gray-300 text-blue-600"
                             />
-                            Search in all folders
+                            Search all folders
                         </label>
-
-                        <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                            Sort by
-                            <select
-                                value={sortBy}
-                                onChange={(e) => {
-                                    setSortBy(e.target.value as ItemsSortBy);
-                                    setPage(1);
-                                }}
-                                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                            >
-                                {SORT_OPTIONS.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-
-                        <button
-                            onClick={() => {
-                                setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-                                setPage(1);
-                            }}
-                            className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
-                        >
-                            {sortOrder === 'asc' ? '↑ Asc' : '↓ Desc'}
-                        </button>
-                    </div>
-
-                    {/* Right side pagination */}
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-            <span>
-              Showing {(data.page - 1) * data.pageSize + 1}–
-                {Math.min(data.page * data.pageSize, data.total)} of {data.total}
-            </span>
-
-                        <label className="flex items-center gap-2">
-                            Show
-                            <select
-                                value={pageSize}
-                                onChange={(e) => {
-                                    setPageSize(Number(e.target.value));
-                                    setPage(1);
-                                }}
-                                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                            >
-                                {PAGE_SIZE_OPTIONS.map((size) => (
-                                    <option key={size} value={size}>
-                                        {size}
-                                    </option>
-                                ))}
-                            </select>
-                            per page
-                        </label>
-
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                disabled={page <= 1}
-                                className="rounded border border-gray-300 px-3 py-1.5 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800"
-                            >
-                                Previous
-                            </button>
-                            <span className="px-2">
-                {page} / {data.totalPages || 1}
-              </span>
-                            <button
-                                onClick={() => setPage((p) => Math.min(data.totalPages || 1, p + 1))}
-                                disabled={page >= data.totalPages}
-                                className="rounded border border-gray-300 px-3 py-1.5 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800"
-                            >
-                                Next
-                            </button>
-                        </div>
                     </div>
                 </div>
             </header>
 
             {/* Main content */}
-            <main className="flex-1 overflow-auto p-6">
+            <main className="flex-1 overflow-hidden p-6">
                 {error && (
-                    <div className="mb-4 rounded bg-red-100 p-3 text-red-800 dark:bg-red-900/30 dark:text-red-200">
+                    <div className="mb-4 rounded bg-red-100 p-4 text-red-800 dark:bg-red-900/30 dark:text-red-200">
                         {error}
                     </div>
                 )}
 
                 {loading ? (
-                    <div className="flex h-64 items-center justify-center text-gray-500 dark:text-gray-400">
-                        Loading...
-                    </div>
+                    <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>
                 ) : data.items.length === 0 ? (
                     <div className="py-16 text-center text-gray-500 dark:text-gray-400">
-                        No items found
+                        No items found in this folder
                     </div>
                 ) : (
-                    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead className="bg-blue-700 text-white">
-                            <tr>
-                                <th className="w-10 px-6 py-4 text-left font-medium">Name</th>
-                                <th className="px-6 py-4 text-left font-medium">Created by</th>
-                                <th className="px-6 py-4 text-left font-medium">Date</th>
-                                <th className="px-6 py-4 text-left font-medium">File size</th>
-                                <th className="w-24 px-6 py-4"></th>
-                            </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
-                            {data.items.map((item) => (
-                                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            {item.kind === 'folder' ? (
-                                                <span className="text-2xl">📁</span>
-                                            ) : (
-                                                <span className="text-2xl">📄</span>
-                                            )}
-                                            {item.kind === 'folder' ? (
-                                                <button
-                                                    onClick={() => navigateToFolder(item.id, item.name)}
-                                                    className="font-medium text-blue-600 hover:underline dark:text-blue-400"
-                                                >
-                                                    {item.name}
-                                                </button>
-                                            ) : (
-                                                <span className="font-medium text-gray-900 dark:text-gray-100">
-                            {getItemName(item)}
-                          </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                        John Green
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                        {formatDate(item.createdAt)}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                        {item.kind === 'folder' ? '—' : formatFileSize(item.sizeBytes)}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                onClick={() =>
-                                                    setRenameModal({
-                                                        kind: item.kind,
-                                                        id: item.id,
-                                                        name: getItemName(item),
-                                                    })
-                                                }
-                                                className="rounded p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-                                                title="Rename"
-                                            >
-                                                ✏️
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    setDeleteConfirm({
-                                                        kind: item.kind,
-                                                        id: item.id,
-                                                        name: getItemName(item),
-                                                    })
-                                                }
-                                                className="rounded p-1.5 text-gray-500 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/30"
-                                                title="Delete"
-                                            >
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </td>
+                    <>
+                        <div className="mb-4 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                            <div>
+                                Showing <strong>{data.items.length}</strong> of <strong>{data.total}</strong> items
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <label className="flex items-center gap-2">
+                                    Show:
+                                    <select
+                                        value={pageSize}
+                                        onChange={(e) => setPageSize(Number(e.target.value))}
+                                        className="rounded border px-2 py-1 dark:border-gray-700 dark:bg-gray-800"
+                                    >
+                                        {PAGE_SIZE_OPTIONS.map((size) => (
+                                            <option key={size} value={size}>
+                                                {size}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="overflow-auto rounded-lg border dark:border-gray-700">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className="bg-blue-700 text-white">
+                                <tr>
+                                    <th
+                                        className="cursor-pointer px-6 py-4 text-left font-medium hover:bg-blue-800"
+                                        onClick={() => toggleSort('name')}
+                                    >
+                                        Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-6 py-4 text-left font-medium">Created by</th>
+                                    <th
+                                        className="cursor-pointer px-6 py-4 text-left font-medium hover:bg-blue-800"
+                                        onClick={() => toggleSort('createdAt')}
+                                    >
+                                        Date {sortBy === 'createdAt' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th
+                                        className="cursor-pointer px-6 py-4 text-left font-medium hover:bg-blue-800"
+                                        onClick={() => toggleSort('size')}
+                                    >
+                                        File size {sortBy === 'size' && (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="w-32 px-6 py-4 text-right font-medium">Actions</th>
                                 </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                                {data.items.map((item) => (
+                                    <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                {item.kind === 'folder' ? <span className="text-2xl">📁</span> : <span className="text-2xl">📄</span>}
+                                                {item.kind === 'folder' ? (
+                                                    <button
+                                                        onClick={() => navigateToFolder(item.id, item.name)}
+                                                        className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+                                                    >
+                                                        {item.name}
+                                                    </button>
+                                                ) : (
+                                                    <span className="font-medium text-gray-900 dark:text-gray-100">{getItemName(item)}</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                            {item.createdBy || '—'}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                            {formatDate(item.createdAt)}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                            {item.kind === 'folder' ? '—' : formatFileSize(item.sizeBytes)}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() =>
+                                                        setRenameModal({
+                                                            kind: item.kind,
+                                                            id: item.id,
+                                                            name: getItemName(item),
+                                                        })
+                                                    }
+                                                    className="rounded p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                                    title="Rename"
+                                                >
+                                                    ✏️
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        setDeleteConfirm({
+                                                            kind: item.kind,
+                                                            id: item.id,
+                                                            name: getItemName(item),
+                                                        })
+                                                    }
+                                                    className="rounded p-1.5 text-gray-500 hover:bg-red-50 dark:text-gray-400 dark:hover:bg-red-900/30"
+                                                    title="Delete"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Pagination */}
+                        {data.totalPages > 1 && (
+                            <div className="mt-6 flex items-center justify-between text-sm">
+                                <button
+                                    disabled={page === 1 || loading}
+                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                    className="rounded border px-4 py-2 disabled:opacity-50 dark:border-gray-700"
+                                >
+                                    Previous
+                                </button>
+
+                                <span>
+                  Page <strong>{page}</strong> of <strong>{data.totalPages}</strong>
+                </span>
+
+                                <button
+                                    disabled={page === data.totalPages || loading}
+                                    onClick={() => setPage((p) => p + 1)}
+                                    className="rounded border px-4 py-2 disabled:opacity-50 dark:border-gray-700"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </main>
 
@@ -444,7 +485,7 @@ export function DocumentsExplorer() {
             {deleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
                     <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-2xl dark:bg-gray-900">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        <h2 className="text-xl font-semibold">
                             Delete {deleteConfirm.kind}?
                         </h2>
                         <p className="mt-2 text-gray-600 dark:text-gray-300">

@@ -38,4 +38,10 @@ export class CreateDocumentDto {
     @IsInt()
     @Min(0)
     sizeBytes?: number;
+
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    @IsString()
+    @IsOptional()
+    @MaxLength(MAX_STRING_LENGTH)
+    createdBy!: string;
 }

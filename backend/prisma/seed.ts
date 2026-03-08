@@ -92,6 +92,7 @@ const DOCUMENTS = [
         description: "Complete employee guidelines and policies",
         fileName: "employee-handbook-2026.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 2_456_789,
         folderName: "Policies"
     },
@@ -100,6 +101,7 @@ const DOCUMENTS = [
         description: "Company code of conduct and ethics",
         fileName: "code-of-conduct.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 987_654,
         folderName: "Policies"
     },
@@ -108,6 +110,7 @@ const DOCUMENTS = [
         description: "Health, dental, and retirement benefits",
         fileName: "benefits-overview.pptx",
         mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        createdBy: "John Green",
         sizeBytes: 3_234_567,
         folderName: "Employee Records"
     },
@@ -116,6 +119,7 @@ const DOCUMENTS = [
         description: "Job posting for senior developer role",
         fileName: "senior-dev-jd.docx",
         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        createdBy: "John Green",
         sizeBytes: 234_567,
         folderName: "Recruitment"
     },
@@ -126,6 +130,7 @@ const DOCUMENTS = [
         description: "Company-wide budget allocation",
         fileName: "budget-2026.xlsx",
         mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        createdBy: "John Green",
         sizeBytes: 1_876_543,
         folderName: "Budget"
     },
@@ -134,6 +139,7 @@ const DOCUMENTS = [
         description: "Quarterly financial summary",
         fileName: "q1-report.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 1_234_567,
         folderName: "Budget"
     },
@@ -142,6 +148,7 @@ const DOCUMENTS = [
         description: "Consulting services - January",
         fileName: "INV-2026-001.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 345_678,
         folderName: "Invoices 2026"
     },
@@ -150,6 +157,7 @@ const DOCUMENTS = [
         description: "Software licenses - January",
         fileName: "INV-2026-002.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 456_789,
         folderName: "Invoices 2026"
     },
@@ -158,6 +166,7 @@ const DOCUMENTS = [
         description: "Consulting services - December",
         fileName: "INV-2025-089.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 234_567,
         folderName: "Invoices 2025"
     },
@@ -166,6 +175,7 @@ const DOCUMENTS = [
         description: "Annual corporate tax filing",
         fileName: "tax-2025.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 5_678_901,
         folderName: "Tax Returns"
     },
@@ -176,6 +186,7 @@ const DOCUMENTS = [
         description: "OpenAPI specification for backend services",
         fileName: "api-spec-v2.yaml",
         mimeType: "text/yaml",
+        createdBy: "John Green",
         sizeBytes: 45_678,
         folderName: "API Documentation"
     },
@@ -184,6 +195,7 @@ const DOCUMENTS = [
         description: "ER diagram and schema documentation",
         fileName: "schema.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 876_543,
         folderName: "API Documentation"
     },
@@ -192,6 +204,7 @@ const DOCUMENTS = [
         description: "Storybook documentation",
         fileName: "components-storybook.html",
         mimeType: "text/html",
+        createdBy: "John Green",
         sizeBytes: 12_345_678,
         folderName: "React Components"
     },
@@ -200,6 +213,7 @@ const DOCUMENTS = [
         description: "How to deploy services to k8s",
         fileName: "k8s-deploy.md",
         mimeType: "text/markdown",
+        createdBy: "John Green",
         sizeBytes: 23_456,
         folderName: "Kubernetes Configs"
     },
@@ -210,6 +224,7 @@ const DOCUMENTS = [
         description: "Creative assets for Q1 campaign",
         fileName: "q1-campaign.zip",
         mimeType: "application/zip",
+        createdBy: "John Green",
         sizeBytes: 45_678_901,
         folderName: "Q1 Campaigns"
     },
@@ -218,6 +233,7 @@ const DOCUMENTS = [
         description: "Q1 posting schedule",
         fileName: "social-calendar.xlsx",
         mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        createdBy: "John Green",
         sizeBytes: 567_890,
         folderName: "Social Media"
     },
@@ -226,6 +242,7 @@ const DOCUMENTS = [
         description: "Official brand style guide",
         fileName: "brand-guidelines-2026.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 8_765_432,
         folderName: "Brand Assets"
     },
@@ -236,6 +253,7 @@ const DOCUMENTS = [
         description: "2-week Japan travel plan",
         fileName: "japan-itinerary.docx",
         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        createdBy: "John Green",
         sizeBytes: 234_567,
         folderName: "Japan Trip"
     },
@@ -244,6 +262,7 @@ const DOCUMENTS = [
         description: "Tokyo flights",
         fileName: "flight-confirmations.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 1_234_567,
         folderName: "Japan Trip"
     },
@@ -252,6 +271,7 @@ const DOCUMENTS = [
         description: "Hotel confirmations",
         fileName: "hotels.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 876_543,
         folderName: "Japan Trip"
     },
@@ -260,6 +280,7 @@ const DOCUMENTS = [
         description: "Summer Europe trip plan",
         fileName: "europe-trip.docx",
         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        createdBy: "John Green",
         sizeBytes: 345_678,
         folderName: "Europe Trip"
     },
@@ -268,6 +289,7 @@ const DOCUMENTS = [
         description: "Passport copy",
         fileName: "passport.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 2_345_678,
         folderName: "Travel"
     },
@@ -278,6 +300,7 @@ const DOCUMENTS = [
         description: "Getting started guide",
         fileName: "welcome.pdf",
         mimeType: "application/pdf",
+        createdBy: "John Green",
         sizeBytes: 123_456,
         folderName: null
     },
@@ -286,6 +309,7 @@ const DOCUMENTS = [
         description: "DMS architecture overview",
         fileName: "overview.pptx",
         mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        createdBy: "John Green",
         sizeBytes: 2_345_678,
         folderName: null
     },
@@ -335,14 +359,19 @@ async function createFolderHierarchy(tx: TransactionClient) {
 async function createDocuments(tx: TransactionClient, folderMap: Record<string, any>) {
     console.log(" Creating documents...");
 
-    const documents = DOCUMENTS.map(doc => ({
-        title: doc.title,
-        description: doc.description,
-        fileName: doc.fileName,
-        mimeType: doc.mimeType,
-        sizeBytes: doc.sizeBytes,
-        folderId: doc.folderName ? folderMap[doc.folderName]?.id : null,
-    })).filter(doc => doc.folderId !== undefined);
+    const documents = DOCUMENTS.map(doc => {
+        const obj = {
+            title: doc.title,
+            description: doc.description,
+            fileName: doc.fileName,
+            mimeType: doc.mimeType,
+            createdBy: doc.createdBy,     // ← make sure this line exists
+            sizeBytes: doc.sizeBytes,
+            folderId: doc.folderName ? folderMap[doc.folderName]?.id : null,
+        };
+        console.log(`Preparing document: ${doc.title} | createdBy = "${obj.createdBy}"`);
+        return obj;
+    }).filter(doc => doc.folderId !== undefined || doc.folderId === null); // allow root docs
 
     if (documents.length === 0) {
         console.log("No documents to create");

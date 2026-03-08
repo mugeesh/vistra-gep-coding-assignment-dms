@@ -79,7 +79,7 @@ async function bootstrap() {
     });
 
     // Body parser
-    app.useBodyParser('json', {limit: BODY_LIMIT});
+    app.useBodyParser('json', { limit: BODY_LIMIT });
 
     // Validation
     app.useGlobalPipes(
@@ -91,24 +91,18 @@ async function bootstrap() {
         }),
     );
 
-    // Swagger (dev or explicit enable)
-    if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SWAGGER === 'true') {
-        // Port will be set later
-    }
-
     const logger = new Logger('Bootstrap');
     let port = Number(process.env.PORT) || DEFAULT_PORT;
+
+    // ────────────────────────────────────────────────
+    if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SWAGGER === 'true') {
+        setupSwagger(app, port);
+    }
 
     for (let attempt = 0; attempt < MAX_PORT_ATTEMPTS; attempt++) {
         try {
             await app.listen(port);
             logger.log(`Application running on: http://localhost:${port}`);
-
-            // Now setup Swagger with actual port
-            if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SWAGGER === 'true') {
-                setupSwagger(app, port);
-            }
-
             return;
         } catch (err: any) {
             if (err.code === 'EADDRINUSE') {

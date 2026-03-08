@@ -17,7 +17,18 @@ if [[ "$(basename "$(pwd)")" != "backend" ]]; then
 else
   echo "Already in backend/ directory — skipping cd."
 fi
-cp env .env
+
+# Copy env file if it doesn't exist
+if [[ ! -f ".env" ]]; then
+  if [[ -f "env" ]]; then
+    echo "Copying env to .env..."
+    cp env .env
+  else
+    echo "Warning: 'env' file not found. You may need to create .env manually."
+  fi
+else
+  echo ".env file already exists — skipping copy."
+fi
 
 echo "====================================="
 echo "  DMS Backend - Dev Setup"
@@ -35,13 +46,10 @@ docker compose up -d mysql
 
 # 3. Wait for MySQL to be ready
 echo "3. Waiting for MySQL to be fully ready (max 60 seconds)..."
-# Robust wait for MySQL
-echo "3. Waiting for MySQL to be fully healthy (max 60s)..."
 attempts=0
 max_attempts=30
 
-until docker compose ps mysql | grep "healthy" >/dev/null 2>&1 || \
-      docker compose exec -T mysql mysqladmin ping -h localhost -uroot -prootPassword --silent 2>/dev/null; do
+until docker compose exec -T mysql mysqladmin ping -h localhost -uroot -prootPassword --silent 2>/dev/null; do
   attempts=$((attempts + 1))
   if [ $attempts -ge $max_attempts ]; then
     echo "ERROR: MySQL failed to become healthy."
@@ -55,19 +63,33 @@ done
 
 echo "MySQL is fully ready!"
 
-set -euo pipefail
+# 4. Install dependencies if needed
+echo "4. Installing dependencies..."
+npm install
 
+# 5. Prisma setup
+echo "5. Generating Prisma client..."
+npx prisma generate
 
+# 6. Run migrations
+echo "6. Running database migrations..."
+if [[ "$*" == *"--fresh"* ]]; then
+  echo "Fresh migration reset..."
+  npx prisma migrate reset --force
+else
+  npx prisma migrate deploy 2>/dev/null || npx prisma migrate dev --name init
+fi
 
-# 4. Prisma setup
-echo "4. Generating Prisma client..."
-npx prisma generate --no-install || npm install prisma@latest --no-save && npx prisma generate
+# 7. Seed database
+echo "7. Seeding database..."
+if [[ -f "prisma/seed.ts" ]] || [[ -f "prisma/seed.js" ]]; then
+  npx prisma db seed
+else
+  echo "No seed file found — skipping seeding."
+fi
 
-echo "5. Seeding database..."
-npx ts-node prisma/seed.ts
-
-# 7. Start NestJS
-echo "6. Starting NestJS application (watch mode)..."
+# 8. Start NestJS
+echo "8. Starting NestJS application (watch mode)..."
 echo "    → App should be running at http://localhost:3001"
 echo "    → Swagger: http://localhost:3001/api/docs"
 echo "    → Press Ctrl+C to stop"

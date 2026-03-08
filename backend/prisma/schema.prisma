@@ -10,7 +10,7 @@ datasource db {
 
 model Folder {
   id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(255)  // Add length limit
+  name      String    @db.VarChar(255)
   parentId  Int?      @map("parent_id")
   
   // Relations
@@ -31,12 +31,13 @@ model Folder {
 model Document {
   id          Int      @id @default(autoincrement())
   folderId    Int?     @map("folder_id")
-  title       String   @db.VarChar(255)  // Add length limit
-  description String?  @db.Text  // Explicitly use TEXT for longer content
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
   fileName    String?  @map("file_name") @db.VarChar(255)
   mimeType    String?  @map("mime_type") @db.VarChar(100)
-  sizeBytes   Int      @default(0) @map("size_bytes")  // Changed to Int with default 0
-  
+  sizeBytes   Int      @default(0) @map("size_bytes")
+  createdBy   String   @default("-") @map("created_by") @db.VarChar(255)
+
   // Relations
   folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
   
@@ -47,6 +48,7 @@ model Document {
   // Indexes
   @@index([folderId])
   @@index([title])      // For search by title
+  @@index([createdBy])    // For search by createdBy
   @@index([createdAt])  // For sorting by date
-  @@map("documents")    // Use plural table names (convention)
+  @@map("documents")    // Use plural table names
 }

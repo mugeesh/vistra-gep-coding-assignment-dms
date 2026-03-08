@@ -41,6 +41,8 @@ export class FolderItem {
 
     @ApiProperty({ example: '2025-01-02T00:00:00.000Z' })
     updatedAt: string;
+
+
 }
 
 export class DocumentItem {
@@ -67,6 +69,9 @@ export class DocumentItem {
 
     @ApiPropertyOptional({ example: 102400 })
     sizeBytes?: number | null;
+
+    @ApiPropertyOptional({ example: 'John Green' })
+    createdBy: string | null
 
     @ApiProperty({ example: '2025-01-01T00:00:00.000Z' })
     createdAt: string;

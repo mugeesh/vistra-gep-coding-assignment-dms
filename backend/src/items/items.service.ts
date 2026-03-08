@@ -93,6 +93,7 @@ export class ItemsService {
                         fileName: true,
                         mimeType: true,
                         sizeBytes: true,
+                        createdBy: true,
                         createdAt: true,
                         updatedAt: true,
                     },
@@ -122,6 +123,7 @@ export class ItemsService {
                         fileName: true,
                         mimeType: true,
                         sizeBytes: true,
+                        createdBy: true,
                         createdAt: true,
                         updatedAt: true,
                     },
@@ -148,6 +150,7 @@ export class ItemsService {
             fileName: d.fileName,
             mimeType: d.mimeType,
             sizeBytes: d.sizeBytes,
+            createdBy: d.createdBy,
             createdAt: d.createdAt.toISOString(),
             updatedAt: d.updatedAt.toISOString(),
         });

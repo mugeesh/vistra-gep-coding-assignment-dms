@@ -38,6 +38,7 @@ export class DocumentsController {
                 fileName: dto.fileName,
                 mimeType: dto.mimeType,
                 sizeBytes: dto.sizeBytes,
+                createdBy: dto.createdBy,
             });
         } catch (err) {
             if (err instanceof BadRequestException) throw err;
