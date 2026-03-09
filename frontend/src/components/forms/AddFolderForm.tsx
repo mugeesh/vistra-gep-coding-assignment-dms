@@ -8,7 +8,7 @@ import {
     FIELD_LIMITS,
     VALIDATION_MESSAGES,
     noControlChars,
-} from '@/lib/validation';
+} from '@/lib/schema';
 
 const NAME_MAX_LENGTH = FIELD_LIMITS.nameMaxLength;
 const CREATED_BY_MAX_LENGTH = 100; // adjust as needed or move to FIELD_LIMITS

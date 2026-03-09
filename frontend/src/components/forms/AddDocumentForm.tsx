@@ -8,7 +8,7 @@ import {
     FIELD_LIMITS,
     VALIDATION_MESSAGES,
     noControlChars,
-} from '@/lib/validation';
+} from '@/lib/schema';
 
 const TITLE_MAX_LENGTH = FIELD_LIMITS.nameMaxLength;
 const STRING_FIELD_MAX_LENGTH = FIELD_LIMITS.stringFieldMaxLength;
@@ -52,7 +52,7 @@ const schema = z.object({
             ])
         )
         .optional()
-        .refine((v) => v === undefined || (typeof v === 'number' && !Number.isNaN(v) && v >= 0), {
+        .refine((v) => v === undefined || (!Number.isNaN(v) && v >= 0), {
             message: 'Must be a non-negative number',
         }),
     createdBy: optionalString(STRING_FIELD_MAX_LENGTH),

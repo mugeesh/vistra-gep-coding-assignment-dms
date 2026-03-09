@@ -8,7 +8,7 @@ import {
   FIELD_LIMITS,
   VALIDATION_MESSAGES,
   noControlChars,
-} from '@/lib/validation';
+} from '@/lib/schema';
 
 const RENAME_MAX_LENGTH = FIELD_LIMITS.nameMaxLength;
 

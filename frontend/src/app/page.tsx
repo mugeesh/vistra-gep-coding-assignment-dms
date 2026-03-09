@@ -1,5 +1,5 @@
-import { DocumentsExplorer } from '@/components/DocumentsExplorer';
+import { ExplorerContainer } from '@/components/explorer/ExplorerContainer';
 
 export default function HomePage() {
-    return <DocumentsExplorer />;
+    return <ExplorerContainer />;
 }

@@ -15,6 +15,6 @@ npm run dev
 ## Structure
 
 - `src/app` — Next.js App Router (layout, page)
-- `src/components` — DocumentsExplorer, AddFolderForm, AddDocumentForm
-- `src/lib/api.ts` — API client (getItems, createFolder, createDocument)
-- `src/types/api.ts` — shared types (Folder, Document, payloads)
+- `src/components` — ExplorerContainer, AddFolderForm, AddDocumentForm
+- `src/lib/api-client.ts` — API client (getItems, createFolder, createDocument)
+- `src/types/api-client.ts` — shared types (Folder, Document, payloads)

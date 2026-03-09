@@ -6,7 +6,8 @@ import type {
   ItemsSortBy,
   PaginatedItemsResponse,
 } from '@/types/api';
-import { FIELD_LIMITS } from '@/lib/validation';
+import { FIELD_LIMITS } from '@/lib/schema';
+
 
 function getBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -14,6 +15,7 @@ function getBaseUrl(): string {
   }
   return process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 }
+
 
 export interface GetItemsParams {
   parentId: number | null;
