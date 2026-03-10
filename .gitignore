@@ -1,0 +1,26 @@
+# Build outputs
+dist/
+.next/
+build/
+
+# Test coverage (exclude generated reports, but keep test source files)
+coverage/
+*.lcov
+jest-coverage/
+
+# Environment and local files
+.env
+.env.local
+.env.*
+
+# Node modules (already standard)
+node_modules/
+
+# Logs and temp files
+*.log
+*.pid
+*.swp
+
+# OS-specific
+.DS_Store
+Thumbs.db
