@@ -9,14 +9,14 @@ import {
     updateDocument,
     updateFolder,
 } from '@/lib/api-client';
-import type {AddDocumentFormValues} from '@/components';
-import type {AddFolderFormValues} from '@/components';
 import {AddDocumentForm} from '@/components';
 import {AddFolderForm} from '@/components';
 import {RenameModal} from '../ui/RenameModal';
 import {Pagination} from "@/components/explorer/Pagination";
 import {DocumentsTable} from "@/components/explorer/DocumentsTable";
 import {useDocuments} from "@/app/hooks/useDocuments";
+import type { AddDocumentFormOutput } from '@/components';
+import type { AddFolderFormOutput } from '@/components';
 
 interface BreadcrumbItem {
     id: number | null;
@@ -52,7 +52,7 @@ export function ExplorerContainer() {
     } | null>(null);
 
     const currentParentId = history[currentIndex]?.parentId ?? null;
-    const breadcrumb = history[currentIndex]?.breadcrumb ?? [{ id: null, name: 'Root' }];
+    const breadcrumb = history[currentIndex]?.breadcrumb ?? [{id: null, name: 'Root'}];
     const {
         data, loading, error, setError,
         page, setPage,
@@ -72,12 +72,13 @@ export function ExplorerContainer() {
     useEffect(() => {
         setPage(1);
         setSelectedIds([]);
-    }, [currentParentId, sortBy, sortOrder, pageSize, searchDebounced, globalSearch, setPage]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentParentId, sortBy, sortOrder, pageSize, searchDebounced, globalSearch]);
 
     // --- Navigation Handlers ---
     const navigateToFolder = (folderId: number, folderName: string) => {
-        const newBreadcrumb = [...breadcrumb, { id: folderId, name: folderName }];
-        setHistory((prev) => [...prev.slice(0, currentIndex + 1), { parentId: folderId, breadcrumb: newBreadcrumb }]);
+        const newBreadcrumb = [...breadcrumb, {id: folderId, name: folderName}];
+        setHistory((prev) => [...prev.slice(0, currentIndex + 1), {parentId: folderId, breadcrumb: newBreadcrumb}]);
         setCurrentIndex((prev) => prev + 1);
     };
 
@@ -87,7 +88,7 @@ export function ExplorerContainer() {
     };
 
     // --- CRUD Handlers ---
-    const handleCreateFolder = async (values: AddFolderFormValues) => {
+    const handleCreateFolder = async (values: AddFolderFormOutput) => {
         await createFolder({
             name: values.name.trim(),
             parentId: currentParentId,
@@ -97,7 +98,7 @@ export function ExplorerContainer() {
         await loadItems();
     };
 
-    const handleCreateDocument = async (values: AddDocumentFormValues) => {
+    const handleCreateDocument = async (values: AddDocumentFormOutput) => {
         await createDocument({
             title: values.title.trim(),
             folderId: currentParentId,
@@ -212,12 +213,9 @@ export function ExplorerContainer() {
                         </svg>
                     </div>
                     <label className="flex items-center gap-2 text-sm">
-                        <input
-                            type="checkbox"
-                            checked={globalSearch}
-                            onChange={(e) => setGlobalSearch(e.target.checked)}
-                            className="h-4 w-4 rounded border-gray-300 text-blue-600"
-                        />
+                        <input type="checkbox" checked={globalSearch}
+                               onChange={(e) => setGlobalSearch(e.target.checked)}
+                               className="h-4 w-4 rounded border-gray-300 text-blue-600"/>
                         Search all folders
                     </label>
                 </div>
@@ -317,7 +315,7 @@ export function ExplorerContainer() {
                             Delete {deleteConfirm.kind}?
                         </h2>
                         <p className="mt-2 text-gray-600">
-                            Are you sure you want to delete "{deleteConfirm.name}"? This cannot be undone.
+                            Are you sure you want to delete `{deleteConfirm.name}`? This cannot be undone.
                         </p>
                         <div className="mt-6 flex justify-end gap-3">
                             <button

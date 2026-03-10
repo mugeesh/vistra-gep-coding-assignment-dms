@@ -17,15 +17,14 @@ interface DocumentsTableProps {
     onDelete: (item: ListItem) => void;
 }
 
-// Helper functions moved from Container to Table
-function formatFileSize(bytes: number | null): string {
+export function formatFileSize(bytes: number | null): string {
     if (bytes == null || bytes === 0) return '—';
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function formatDate(iso: string): string {
+export function formatDate(iso: string): string {
     try {
         const d = new Date(iso);
         return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -44,7 +43,7 @@ export function DocumentsTable({
                                    onNavigate,
                                    onRename,
                                    onDelete
-                               }: DocumentsTableProps) {
+                               }: Readonly<DocumentsTableProps>) {
     const isAllSelected = items.length > 0 && selectedIds.length === items.length;
     const isIndeterminate = selectedIds.length > 0 && selectedIds.length < items.length;
 

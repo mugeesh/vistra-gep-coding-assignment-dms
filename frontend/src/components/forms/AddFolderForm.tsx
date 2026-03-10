@@ -39,16 +39,12 @@ const schema = z.object({
         .default('-'),
 });
 
-// Separate input & output types — this is the key
 type AddFolderFormInput = z.input<typeof schema>;
-type AddFolderFormOutput = z.output<typeof schema>;
-
-// The type you pass to onSubmit
-export type AddFolderFormValues = AddFolderFormOutput;
+export type AddFolderFormOutput = z.output<typeof schema>;
 
 interface AddFolderFormProps {
     defaultParentId: number | null;
-    onSubmit: (values: AddFolderFormValues) => Promise<void>;
+    onSubmit: (values: AddFolderFormOutput) => Promise<void>;
     onCancel: () => void;
     isOpen: boolean;
 }
@@ -58,18 +54,18 @@ export function AddFolderForm({
                                   onSubmit,
                                   onCancel,
                                   isOpen,
-                              }: AddFolderFormProps) {
+                              }: Readonly<AddFolderFormProps>) {
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
         reset,
-    } = useForm<AddFolderFormInput, any, AddFolderFormOutput>({
+    } = useForm<AddFolderFormInput, object, AddFolderFormOutput>({
         resolver: zodResolver(schema),
         defaultValues: {
             name: '',
             parentId: defaultParentId,
-            createdBy: '',           // input allows empty → will become '-' after validation
+            createdBy: '',
         },
     });
 

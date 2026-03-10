@@ -14,49 +14,39 @@ A simple hierarchical **Documents Management System (DMS)** simulating folders a
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
-- [Quick Start (via script)](#quick-start-via-script)
+- [Quick Start](#quick-start)
 - [Manual Setup](#manual-setup)
 - [Access Points](#access-points)
 - [Database & Reset](#database--reset)
 - [Running Tests](#running-tests)
 
 ## Overview
-
-This project implements a basic Documents Management System as per the Vistra GEP assignment requirements.
-
-- No real file uploads — simulates records (name, type, size, createdBy, etc.)
-- Supports nested folders/documents
-- Basic CRUD + search functionality
-- Code is clean, well-structured, and follows best practices
+This project implements a basic Documents Management System as per the Vistra GEP assignment. It includes a frontend UI for viewing and adding folders/documents, and a backend API for data management using MySQL. No actual file uploads are implemented—only simulated records.
 
 ## Features
-
 - Hierarchical folder/document structure (parent-child relationships)
-- View items in current folder
-- Add new folder
-- Add new document (with form validation)
-- [Bonus] Global + folder-level search
+  View items in current folder
+- Add new folders and documents with form validation
+- [Bonus] Global and folder-level search
 - Responsive UI
 - Swagger API documentation
-- Prisma migrations & MySQL via Docker
-- Unit/integration tests (backend)
+- Prisma migrations and MySQL via Docker
+-Unit/integration tests for frontend and backend
+
 
 ## Tech Stack
-
-- **Frontend**: Next.js 14+ (App Router), TypeScript, Tailwind CSS
+- **Frontend**: Next.js 14+ (App Router), TypeScript, Tailwind CSS, React Hook Form, Zod
 - **Backend**: NestJS, TypeScript, Prisma ORM
 - **Database**: MySQL 8 (Dockerized)
-- **Tools**: Docker Compose, class-validator, class-transformer
+- **Tools**: Tools: Docker Compose, Jest, Swagger/OpenAPI, class-validator, class-transformer
 
 ## Prerequisites
-
 - Node.js ≥ 22
 - npm ≥ 9
-- Docker & Docker Compose
+- Docker & Docker Compose 
 - Git
 
-## Quick Start (via script)
-
+## Quick Start
 ```bash
 git clone https://github.com/mugeesh/vistra-gep-coding-assignment-dms.git
 cd vistra-gep-coding-assignment-dms
@@ -65,52 +55,47 @@ cd vistra-gep-coding-assignment-dms
 chmod +x start-all.sh
 ./start-all.sh
 ```
+This starts the database, backend, and frontend automatically. 
+Access at:
+- http://localhost:3000/ (Frontend)
+- http://localhost:3001/api/docs (Swagger)
+
+This starts the database, backend, and frontend automatically.
 
 ## Manual Setup
+1. **Start the Database (MySQL via Docker)**
+   ```bash
+    docker compose up -d mysql
+   ```
+   Wait 10-20 seconds, then verify with docker ps (should show MySQL and Adminer containers).
+2. **Backend api setup:**
+    ```bash
+    cd backend
+    cp .env.example .env
+    npm install
+    npx prisma generate
+    npx prisma migrate deploy
+    
+    # Optional: Load seed data
+    npm run prisma:seed
+    
+    # Start in dev mode
+    npm run start:dev
+     ```
+   
+3. **Frontend Setup:**
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
+      Bash
 
-If you prefer more control or the automated script doesn't work in your environment, follow these steps:
-
-### backend api:
-
-1. **Start the Database (MySQL via Docker)**  
-   From the project root:
-
-```bash
-  docker compose up -d mysql
-```
-
-2. **Start backend api**
-
-```bash
- cd backend
- npm install
- npx prisma generate
- npx prisma migrate deploy  
- ```
-
-3. Load test seed data
-
-```bash
-npm run prisma:seed,
-```
-
-4. Run apps
-
-```bash 
-  npm run start:dev     
-```
-
-### Check Swagger UI: http://localhost:3001/api/docs
-
-### frontend api:
-
-```bash 
-  cd frontend
-  npm install
-  npm run dev    
-```
-
-### Check Web: http://localhost:3000
+4. **Load test seed data** 
+    ```bash
+    cd backend 
+    npm run prisma:seed
+    ```
 
 ## Access Points
 
@@ -118,7 +103,6 @@ Once the application is running:
 
 - **Frontend UI**  
   http://localhost:3000  
-  (Main interface for browsing folders, viewing items, adding new folders/documents, and searching)
 
 - **Backend API**  
   http://localhost:3001
@@ -137,41 +121,37 @@ Once the application is running:
     - Database: `document_management_system`
 
 ## Database & Reset
-
-- The database uses a hierarchical structure with self-referencing `parentId` (folders can contain both documents and
-  subfolders).
-- Schema definition: `backend/prisma/schema.prisma`
-- Migrations are applied automatically when starting the backend (via Prisma migrate).
+- Schema: Defined in `backend/prisma/schema.prisma` (self-referencing parentId for hierarchy).
+- Migrations: Applied via Prisma on backend start.
+- Reset: Drops tables, re-applies migrations (use with caution):
 - Seed data (optional demo items) may be applied depending on your `start-all.sh` / `start-dev.sh` implementation.
-
+    ```
+    cd backend
+    npx prisma migrate reset --force
+    ```
 **Reset the database** (drops all tables, re-applies migrations, optional re-seed):
 
+### Project Structure
+- `backend/`:
+  - `src/`: Controllers, services, modules
+  -` prisma/`: Schema, migrations, seeds
+  - `test/`: Integration/unit tests
+
+- `frontend/`:
+  - `src/app/`: Pages and layouts
+  - `src/components/`: UI components (e.g., ExplorerContainer, AddFolderForm, AddDocumentForm)
+  - `src/lib/`: API client
+  - `src/types/`: Shared types
+  - `src/__tests__/`: Unit/component tests
+
+### Running Tests
+Backend (Integration & Unit)
 ```bash
-cd backend
-npm run dev:reset
-
-or
-
-cd backend
-npx prisma migrate reset --force
+    cd backend
+    npm run test
 ```
-
-## Running Tests
-
-1. backend running test
-2.  node -v -this should be v22.X.X
-```bash
-cd backend
-docker compose up -d
-cp .env.example .env 
-npm install
-npx prisma generate
-npm run test
-
-
-**======= Test results ==========**
-mugeesh@mugeesh backend % npm run test
-
+##### Example output:
+```
 > backend-api@1.0.0 test
 > jest --config jest.config.js
 
@@ -212,4 +192,24 @@ Snapshots:   0 total
 Time:        3.514 s, estimated 4 s
 Ran all test suites.
 ```
-2. Frontend test case    
+
+### Frontend (Unit & Component)
+```bash
+cd frontend
+npm run test
+```
+##### Example output:
+```
+> frontend@1.0.0 test
+> jest
+
+ PASS  src/__tests__/unit/sorting.test.ts
+ PASS  src/__tests__/components/DocumentsTable.test.tsx
+ PASS  src/__tests__/components/AddDocumentForm.test.tsx
+
+Test Suites: 3 passed, 3 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        1.275 s
+Ran all test suites.
+```

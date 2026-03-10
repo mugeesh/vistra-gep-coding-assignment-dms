@@ -28,8 +28,8 @@ export function sortItems(
         }
 
         // Handle other columns (Date, Size) using standard comparison
-        let valA = a[sortBy as keyof ListItem] ?? '';
-        let valB = b[sortBy as keyof ListItem] ?? '';
+        const valA = a[sortBy as keyof ListItem] ?? '';
+        const valB = b[sortBy as keyof ListItem] ?? '';
 
         if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
         if (valA > valB) return sortOrder === 'asc' ? 1 : -1;

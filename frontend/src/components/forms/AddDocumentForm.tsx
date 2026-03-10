@@ -1,9 +1,9 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useEffect} from 'react';
+import {useForm} from 'react-hook-form';
+import {z} from 'zod';
 import {
     FIELD_LIMITS,
     VALIDATION_MESSAGES,
@@ -24,7 +24,7 @@ const optionalString = (maxLen: number) =>
                 z
                     .string()
                     .max(maxLen, VALIDATION_MESSAGES.maxLength(maxLen))
-                    .refine(noControlChars, { message: VALIDATION_MESSAGES.noControlChars }),
+                    .refine(noControlChars, {message: VALIDATION_MESSAGES.noControlChars}),
             ]),
         );
 
@@ -37,7 +37,7 @@ const schema = z.object({
                 .string()
                 .min(1, VALIDATION_MESSAGES.required('Title'))
                 .max(TITLE_MAX_LENGTH, VALIDATION_MESSAGES.maxLength(TITLE_MAX_LENGTH))
-                .refine(noControlChars, { message: VALIDATION_MESSAGES.noControlChars }),
+                .refine(noControlChars, {message: VALIDATION_MESSAGES.noControlChars}),
         ),
     folderId: z.union([z.number(), z.nan()]).optional().nullable(),
     description: optionalString(STRING_FIELD_MAX_LENGTH),
@@ -58,12 +58,9 @@ const schema = z.object({
     createdBy: optionalString(STRING_FIELD_MAX_LENGTH),
 });
 
-// Extract types for React Hook Form
 type AddDocumentFormInput = z.input<typeof schema>;
-type AddDocumentFormOutput = z.output<typeof schema>;
+export type AddDocumentFormOutput = z.output<typeof schema>;
 
-// The values passed to the parent onSubmit
-export type AddDocumentFormValues = AddDocumentFormOutput;
 
 interface AddDocumentFormProps {
     defaultFolderId: number | null;
@@ -77,13 +74,13 @@ export function AddDocumentForm({
                                     onSubmit,
                                     onCancel,
                                     isOpen,
-                                }: AddDocumentFormProps) {
+                                }: Readonly<AddDocumentFormProps>) {
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
         reset,
-    } = useForm<AddDocumentFormInput, any, AddDocumentFormOutput>({
+    } = useForm<AddDocumentFormInput, object, AddDocumentFormOutput>({
         resolver: zodResolver(schema),
         defaultValues: {
             title: '',
@@ -151,7 +148,8 @@ export function AddDocumentForm({
                     </div>
 
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
+                        <label
+                            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
                         <textarea
                             {...register('description')}
                             className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
@@ -160,7 +158,8 @@ export function AddDocumentForm({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">File Name</label>
+                            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">File
+                                Name</label>
                             <input
                                 type="text"
                                 {...register('fileName')}
@@ -168,9 +167,11 @@ export function AddDocumentForm({
                             />
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Size (Bytes)</label>
+                            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Size
+                                (Bytes)</label>
                             <input
                                 type="text"
+                                inputMode="numeric"
                                 {...register('sizeBytes')}
                                 className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
                             />
@@ -178,7 +179,8 @@ export function AddDocumentForm({
                     </div>
 
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Created By</label>
+                        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Created
+                            By</label>
                         <input
                             type="text"
                             {...register('createdBy')}
@@ -187,7 +189,9 @@ export function AddDocumentForm({
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <button type="reset" className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">Cancel</button>
+                        <button type="reset"
+                                className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">Cancel
+                        </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
