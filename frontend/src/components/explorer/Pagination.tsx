@@ -20,7 +20,7 @@ export function Pagination({
                                itemsOnPage,
                                onPageChange,
                                onPageSizeChange
-                           }: PaginationProps) {
+                           }: Readonly<PaginationProps>) {
     if (totalPages <= 1 && totalItems <= PAGE_SIZE_OPTIONS[0]) return null;
 
     return (
@@ -43,33 +43,28 @@ export function Pagination({
             </div>
 
             {totalPages > 1 && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                        className="text-gray-600 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
                         &lt;
                     </button>
 
                     {Array.from({length: totalPages}, (_, i) => i + 1).map((num) => {
                         // Logic to show only a subset of pages if totalPages is very large
                         if (totalPages > 7 && Math.abs(num - currentPage) > 2 && num !== 1 && num !== totalPages) {
-                            if (num === 2 || num === totalPages - 1) return <span key={num}>...</span>;
+                            if (num === 2 || num === totalPages - 1) return <span key={num} className="text-gray-600">...</span>;
                             return null;
                         }
-
                         return (
                             <button
                                 key={num}
                                 onClick={() => onPageChange(num)}
-                                className={`px-3 py-1 rounded border transition-colors ${
-                                    num === currentPage
-                                        ? 'bg-blue-600 text-white border-blue-600'
-                                        : 'hover:bg-gray-100 border-gray-300'
+                                className={`text-sm transition-colors ${
+                                    num === currentPage ? 'font-bold text-blue-600' : 'text-gray-600 hover:text-blue-600'
                                 }`}
-                            >
-                                {num}
+                            >{num}&nbsp;
                             </button>
                         );
                     })}
@@ -77,7 +72,7 @@ export function Pagination({
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-gray-600 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed" // No border/bg
                     >
                         &gt;
                     </button>
