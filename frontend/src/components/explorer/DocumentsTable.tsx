@@ -1,8 +1,9 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { ListItem, ItemsSortBy } from '@/types/api';
-import {IndeterminateCheckbox} from "@/components/ui/IndeterminateCheckbox";
-import {sortItems, getItemName} from "@/lib/sorting";
+import { IndeterminateCheckbox } from "@/components/ui/IndeterminateCheckbox";
+import { sortItems, getItemName } from "@/lib/sorting";
 
 interface DocumentsTableProps {
     items: ListItem[];
@@ -31,7 +32,6 @@ export function formatDate(iso: string): string {
     } catch { return '—'; }
 }
 
-
 export function DocumentsTable({
                                    items,
                                    selectedIds,
@@ -47,6 +47,22 @@ export function DocumentsTable({
     const isAllSelected = items.length > 0 && selectedIds.length === items.length;
     const isIndeterminate = selectedIds.length > 0 && selectedIds.length < items.length;
 
+    const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    const toggleMenu = (id: number) => {
+        setOpenMenuId(prev => prev === id ? null : id);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node) && openMenuId !== null) {
+                setOpenMenuId(null);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside); // Use mousedown to capture before click
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [openMenuId]);
 
     return (
         <div className="overflow-auto rounded-lg border border-gray-200 shadow-sm">
@@ -123,11 +139,39 @@ export function DocumentsTable({
                         <td className="px-6 py-4 text-sm text-gray-600">{item.createdBy || '—'}</td>
                         <td className="px-6 py-4 text-sm text-gray-600">{formatDate(item.createdAt)}</td>
                         <td className="px-6 py-4 text-sm text-gray-600">{item.kind === 'folder' ? '—' : formatFileSize(item.sizeBytes)}</td>
-                        <td className="px-6 py-4 text-right">
-                            <div className="flex justify-end gap-2">
-                                <button onClick={() => onRename(item)} className="p-1 text-gray-400 hover:text-blue-600" title="Rename">✏️</button>
-                                <button onClick={() => onDelete(item)} className="p-1 text-gray-400 hover:text-red-600" title="Delete">🗑️</button>
-                            </div>
+                        <td className="px-6 py-4 text-right relative">
+                            <button
+                                onClick={() => toggleMenu(item.id)}
+                                className="p-1 text-gray-400 hover:text-gray-600"
+                                title="More options"
+                            >
+                                ⋯
+                            </button>
+                            {openMenuId === item.id && (
+                                <div
+                                    ref={menuRef}
+                                    className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10"
+                                >
+                                    <button
+                                        onClick={() => {
+                                            onRename(item);
+                                            setOpenMenuId(null);
+                                        }}
+                                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                    >
+                                        Rename
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            onDelete(item);
+                                            setOpenMenuId(null);
+                                        }}
+                                        className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            )}
                         </td>
                     </tr>
                 ))}
