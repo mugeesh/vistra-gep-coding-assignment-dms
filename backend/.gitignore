@@ -12,13 +12,14 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
-
+node_module
 # OS
 .DS_Store
 
 # Tests
 /coverage
 /.nyc_output
+./coverage
 
 # IDEs and editors
 /.idea

@@ -1,13 +1,11 @@
 'use client';
-
-import {useCallback, useEffect, useState} from 'react';
-import type {ListItem, ItemsSortBy} from '@/types/api';
+import {useEffect, useState} from 'react';
+import type {ItemsSortBy} from '@/types/api';
 import {
     createDocument,
     createFolder,
     deleteDocument,
     deleteFolder,
-    getItems,
     updateDocument,
     updateFolder,
 } from '@/lib/api-client';
@@ -18,6 +16,7 @@ import {AddFolderForm} from '@/components';
 import {RenameModal} from '../ui/RenameModal';
 import {Pagination} from "@/components/explorer/Pagination";
 import {DocumentsTable} from "@/components/explorer/DocumentsTable";
+import {useDocuments} from "@/app/hooks/useDocuments";
 
 interface BreadcrumbItem {
     id: number | null;
@@ -34,36 +33,18 @@ export function ExplorerContainer() {
         {parentId: null, breadcrumb: [{id: null, name: 'Root'}]},
     ]);
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    const [data, setData] = useState<{
-        items: ListItem[];
-        total: number;
-        page: number;
-        pageSize: number;
-        totalPages: number;
-    }>({items: [], total: 0, page: 1, pageSize: 10, totalPages: 1});
-
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const [folderModalOpen, setFolderModalOpen] = useState(false);
-    const [documentModalOpen, setDocumentModalOpen] = useState(false);
-
     const [search, setSearch] = useState('');
     const [searchDebounced, setSearchDebounced] = useState('');
     const [globalSearch, setGlobalSearch] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-    const [sortBy, setSortBy] = useState<ItemsSortBy>('name');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-    const [pageSize, setPageSize] = useState(5);
-    const [page, setPage] = useState(1);
-
+    const [folderModalOpen, setFolderModalOpen] = useState(false);
+    const [documentModalOpen, setDocumentModalOpen] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<{
         kind: 'folder' | 'document';
         id: number;
         name: string;
     } | null>(null);
-
     const [renameModal, setRenameModal] = useState<{
         kind: 'folder' | 'document';
         id: number;
@@ -71,62 +52,32 @@ export function ExplorerContainer() {
     } | null>(null);
 
     const currentParentId = history[currentIndex]?.parentId ?? null;
-    const breadcrumb = history[currentIndex]?.breadcrumb ?? [{id: null, name: 'Root'}];
+    const breadcrumb = history[currentIndex]?.breadcrumb ?? [{ id: null, name: 'Root' }];
+    const {
+        data, loading, error, setError,
+        page, setPage,
+        pageSize, setPageSize,
+        sortBy, setSortBy,
+        sortOrder, setSortOrder,
+        loadItems
+    } = useDocuments(currentParentId, searchDebounced, globalSearch);
 
-    // Debounce search
+    // --- Effects ---
     useEffect(() => {
         const timer = setTimeout(() => setSearchDebounced(search.trim()), 400);
         return () => clearTimeout(timer);
     }, [search]);
 
-    // Reset page when filters/sort/parent changes
+    // Reset page
     useEffect(() => {
         setPage(1);
         setSelectedIds([]);
-    }, [currentParentId, sortBy, sortOrder, pageSize, searchDebounced, globalSearch]);
+    }, [currentParentId, sortBy, sortOrder, pageSize, searchDebounced, globalSearch, setPage]);
 
-    const loadItems = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await getItems({
-                parentId: currentParentId,
-                page, // This uses the 'page' state
-                pageSize, // This MUST use the 'pageSize' state
-                sortBy,
-                sortOrder,
-                search: searchDebounced || undefined,
-                globalSearch: globalSearch && !!searchDebounced ? true : undefined,
-            });
-            setData(result);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load items');
-        } finally {
-            setLoading(false);
-        }
-    }, [currentParentId, page, pageSize, sortBy, sortOrder, searchDebounced, globalSearch]);
-
-    useEffect(() => {
-        let isMounted = true;
-        const executeLoad = async () => {
-            try {
-                await loadItems();
-                if (isMounted) {
-                    setSelectedIds([]);
-                }
-            } catch (err) {
-                if (isMounted) console.error("Load error:", err);
-            }
-        };
-        executeLoad();
-        return () => {
-            isMounted = false;
-        };
-    }, [loadItems]);
-
+    // --- Navigation Handlers ---
     const navigateToFolder = (folderId: number, folderName: string) => {
-        const newBreadcrumb = [...breadcrumb, {id: folderId, name: folderName}];
-        setHistory((prev) => [...prev.slice(0, currentIndex + 1), {parentId: folderId, breadcrumb: newBreadcrumb}]);
+        const newBreadcrumb = [...breadcrumb, { id: folderId, name: folderName }];
+        setHistory((prev) => [...prev.slice(0, currentIndex + 1), { parentId: folderId, breadcrumb: newBreadcrumb }]);
         setCurrentIndex((prev) => prev + 1);
     };
 
@@ -135,11 +86,12 @@ export function ExplorerContainer() {
         setCurrentIndex(targetIndex);
     };
 
+    // --- CRUD Handlers ---
     const handleCreateFolder = async (values: AddFolderFormValues) => {
         await createFolder({
             name: values.name.trim(),
             parentId: currentParentId,
-            createdBy: values.createdBy.trim(),
+            createdBy: values.createdBy?.trim() || '—',
         });
         setFolderModalOpen(false);
         await loadItems();
@@ -189,10 +141,6 @@ export function ExplorerContainer() {
         }
     };
 
-    // Inside ExplorerContainer component
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
-
     // Generate page numbers for pagination
     const pageNumbers = [];
     for (let i = 1; i <= data.totalPages; i++) {
@@ -212,13 +160,26 @@ export function ExplorerContainer() {
                     <div className="flex gap-4">
                         <button
                             onClick={() => setDocumentModalOpen(true)}
-                            className="flex items-center gap-2 rounded bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+                            className="flex items-center gap-2 rounded border border-[#0f0fe3] bg-white px-4 py-2 text-sm font-semibold text-[#0f0fe3] hover:bg-gray-50 transition-colors"
                         >
+                            <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0l-4 4m4-4v12"
+                                />
+                            </svg>
                             Upload files
                         </button>
                         <button
                             onClick={() => setFolderModalOpen(true)}
-                            className="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                            className="flex items-center gap-2 rounded bg-[#0f0fe3] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                         >
                             + Add new folder
                         </button>

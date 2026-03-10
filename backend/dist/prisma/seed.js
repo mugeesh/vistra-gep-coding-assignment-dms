@@ -26,37 +26,31 @@ function getDatabaseConfigFromUrl(databaseUrl) {
     }
 }
 const FOLDERS = [
-    { name: "Appointments resolutions", parentId: null },
-    { name: "Policy approvals", parentId: null },
-    { name: "Archived", parentId: null },
-    { name: "Shared", parentId: null },
-    { name: "HR", parentName: "Appointments resolutions" },
-    { name: "Finance", parentName: "Appointments resolutions" },
-    { name: "Engineering", parentName: "Appointments resolutions" },
-    { name: "Marketing", parentName: "Appointments resolutions" },
-    { name: "Sales", parentName: "Appointments resolutions" },
-    { name: "Employee Records", parentName: "Policy approvals" },
-    { name: "Policies", parentName: "Policy approvals" },
-    { name: "Recruitment", parentName: "Policy approvals" },
-    { name: "Invoices", parentName: "Finance" },
-    { name: "Budget", parentName: "Finance" },
-    { name: "Tax Returns", parentName: "Finance" },
-    { name: "Invoices 2026", parentName: "Invoices" },
-    { name: "Invoices 2025", parentName: "Invoices" },
-    { name: "Backend", parentName: "Engineering" },
-    { name: "Frontend", parentName: "Engineering" },
-    { name: "DevOps", parentName: "Engineering" },
-    { name: "API Documentation", parentName: "Backend" },
-    { name: "React Components", parentName: "Frontend" },
-    { name: "Kubernetes Configs", parentName: "DevOps" },
-    { name: "Campaigns", parentName: "Marketing" },
-    { name: "Social Media", parentName: "Marketing" },
-    { name: "Brand Assets", parentName: "Marketing" },
-    { name: "Q1 Campaigns", parentName: "Campaigns" },
-    { name: "Q2 Campaigns", parentName: "Campaigns" },
-    { name: "Travel", parentName: "Archived" },
-    { name: "Japan Trip", parentName: "Travel" },
-    { name: "Europe Trip", parentName: "Travel" }
+    { name: "Appointments resolutions", parentId: null, createdBy: "John Green" },
+    { name: "Policy approvals", parentId: null, createdBy: "John Green" },
+    { name: "Shared", parentId: null, createdBy: "John Green" },
+    { name: "HR", parentName: "Appointments resolutions", createdBy: "John Green" },
+    { name: "Finance", parentName: "Appointments resolutions", createdBy: "John Green" },
+    { name: "Engineering", parentName: "Appointments resolutions", createdBy: "John Green" },
+    { name: "Marketing", parentName: "Appointments resolutions", createdBy: "John Green" },
+    { name: "Sales", parentName: "Appointments resolutions", createdBy: "John Green" },
+    { name: "Employee Records", parentName: "Policy approvals", createdBy: "John Green" },
+    { name: "Policies", parentName: "Policy approvals", createdBy: "John Green" },
+    { name: "Recruitment", parentName: "Policy approvals", createdBy: "John Green" },
+    { name: "Invoices", parentName: "Finance", createdBy: "John Green" },
+    { name: "Tax Returns", parentName: "Finance", createdBy: "John Green" },
+    { name: "Invoices 2025", parentName: "Invoices", createdBy: "John Green" },
+    { name: "Backend", parentName: "Engineering", createdBy: "John Green" },
+    { name: "Frontend", parentName: "Engineering", createdBy: "John Green" },
+    { name: "API Documentation", parentName: "Backend", createdBy: "John Green" },
+    { name: "React Components", parentName: "Frontend", createdBy: "John Green" },
+    { name: "Kubernetes Configs", parentName: "DevOps", createdBy: "John Green" },
+    { name: "Campaigns", parentName: "Marketing", createdBy: "John Green" },
+    { name: "Social Media", parentName: "Marketing", createdBy: "John Green" },
+    { name: "Q2 Campaigns", parentName: "Campaigns", createdBy: "John Green" },
+    { name: "Travel", parentName: "Shared", createdBy: "John Green" },
+    { name: "Japan Trip", parentName: "Travel", createdBy: "John Green" },
+    { name: "Europe Trip", parentName: "Travel", createdBy: "John Green" },
 ];
 const DOCUMENTS = [
     {
@@ -267,14 +261,32 @@ const DOCUMENTS = [
         folderName: null
     },
     {
-        title: "System Overview",
-        description: "DMS architecture overview",
-        fileName: "overview.pptx",
-        mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        title: "2025_01_15_Director_Appointment_Resolution.pdf",
+        description: "Director Appointment Resolution",
+        fileName: "2025_01_15_Director_Appointment_Resolution.pdf",
+        mimeType: "application/pdf",
         createdBy: "John Green",
-        sizeBytes: 2_345_678,
+        sizeBytes: 3_345_678,
         folderName: null
     },
+    {
+        title: "2024_12_10_Dividend_Declaration_Resolution.docx2024",
+        description: "Dividend Declaration Resolution",
+        fileName: "2024_12_10_Dividend_Declaration_Resolution.docx",
+        mimeType: "application/pdf",
+        createdBy: "John Green",
+        sizeBytes: 4_345_678,
+        folderName: null
+    },
+    {
+        title: "2023_08_05_Investment_Policy_Approval.pdf",
+        description: "Investment policy Approval",
+        fileName: "2023_08_05_Investment_Policy_Approval.pdf",
+        mimeType: "application/pdf",
+        createdBy: "John Green",
+        sizeBytes: 5_345_678,
+        folderName: null
+    }
 ];
 async function createFolderHierarchy(tx) {
     console.log(" Creating folders...");
@@ -282,7 +294,7 @@ async function createFolderHierarchy(tx) {
     const createdFolders = {};
     for (const folder of rootFolders) {
         createdFolders[folder.name] = await tx.folder.create({
-            data: { name: folder.name }
+            data: { name: folder.name, createdBy: folder.createdBy }
         });
     }
     const childFolders = FOLDERS.filter((f) => 'parentName' in f);
@@ -317,7 +329,7 @@ async function createDocuments(tx, folderMap) {
         };
         console.log(`Preparing document: ${doc.title} | createdBy = "${obj.createdBy}"`);
         return obj;
-    }).filter(doc => doc.folderId !== undefined || doc.folderId === null);
+    }).filter(doc => doc.folderId !== undefined || false);
     if (documents.length === 0) {
         console.log("No documents to create");
         return;

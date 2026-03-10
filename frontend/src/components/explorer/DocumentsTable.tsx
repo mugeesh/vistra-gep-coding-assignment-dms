@@ -2,6 +2,7 @@
 
 import { ListItem, ItemsSortBy } from '@/types/api';
 import {IndeterminateCheckbox} from "@/components/ui/IndeterminateCheckbox";
+import {sortItems, getItemName} from "@/lib/sorting";
 
 interface DocumentsTableProps {
     items: ListItem[];
@@ -31,10 +32,6 @@ function formatDate(iso: string): string {
     } catch { return '—'; }
 }
 
-function getItemName(item: ListItem): string {
-    if (item.kind === 'folder') return item.name;
-    return item.title || item.fileName || 'Untitled';
-}
 
 export function DocumentsTable({
                                    items,
@@ -50,6 +47,7 @@ export function DocumentsTable({
                                }: DocumentsTableProps) {
     const isAllSelected = items.length > 0 && selectedIds.length === items.length;
     const isIndeterminate = selectedIds.length > 0 && selectedIds.length < items.length;
+
 
     return (
         <div className="overflow-auto rounded-lg border border-gray-200 shadow-sm">
@@ -67,10 +65,10 @@ export function DocumentsTable({
                         <div className="flex items-center gap-1">
                             Name
                             <span className={`transition-colors ${sortBy === 'name' ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
-                                    <svg className={`w-4 h-4 ${sortBy === 'name' && sortOrder === 'desc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                                    </svg>
-                                </span>
+                                <svg className={`w-4 h-4 ${sortBy === 'name' && sortOrder === 'desc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                </svg>
+                            </span>
                         </div>
                     </th>
                     <th className="px-6 py-4 text-left font-medium">Created by</th>
@@ -78,10 +76,10 @@ export function DocumentsTable({
                         <div className="flex items-center gap-1">
                             Date
                             <span className={`transition-colors ${sortBy === 'createdAt' ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
-                                    <svg className={`w-4 h-4 ${sortBy === 'createdAt' && sortOrder === 'desc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                                    </svg>
-                                </span>
+                                <svg className={`w-4 h-4 ${sortBy === 'createdAt' && sortOrder === 'desc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                </svg>
+                            </span>
                         </div>
                     </th>
                     <th className="px-6 py-4 text-left font-medium">File size</th>
@@ -89,8 +87,12 @@ export function DocumentsTable({
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                {items.map((item) => (
-                    <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${selectedIds.includes(item.id) ? 'bg-blue-50/50' : ''}`}>
+
+                {sortItems(items, sortBy, sortOrder).map((item) => (
+                    <tr
+                        key={`${item.kind}-${item.id}`}
+                        className={`hover:bg-gray-50 transition-colors ${selectedIds.includes(item.id) ? 'bg-blue-50/50' : ''}`}
+                    >
                         <td className="px-6 py-4">
                             <input
                                 type="checkbox"

@@ -70,23 +70,26 @@ npm install
 # 5. Prisma setup
 echo "5. Generating Prisma client..."
 npx prisma generate
+# 3. Preparation
+npm install
+npm run prisma:generate
 
-# 6. Run migrations
-echo "6. Running database migrations..."
+# 4. syn DB
+echo "Synchronizing Database..."
 if [[ "$*" == *"--fresh"* ]]; then
-  echo "Fresh migration reset..."
+  echo "Force resetting database..."
   npx prisma migrate reset --force
 else
-  npx prisma migrate deploy 2>/dev/null || npx prisma migrate dev --name init
+  # 'db push' is the best for reviewers because it ignores migration history
+  # We removed --skip-generate to fix the 'unknown option' error
+  npx prisma db push --accept-data-loss
 fi
 
-# 7. Seed database
-echo "7. Seeding database..."
-if [[ -f "prisma/seed.ts" ]] || [[ -f "prisma/seed.js" ]]; then
-  npx prisma db seed
-else
-  echo "No seed file found — skipping seeding."
-fi
+# 5. Seeding
+echo "Seeding initial data..."
+npm run prisma:seed || {
+  echo "Seed failed. Reviewer may need to run 'cd  backend && npm run prisma:seed' manually."
+}
 
 # 8. Start NestJS
 echo "8. Starting NestJS application (watch mode)..."
@@ -94,5 +97,5 @@ echo "    → App should be running at http://localhost:3001"
 echo "    → Swagger: http://localhost:3001/api/docs"
 echo "    → Press Ctrl+C to stop"
 echo ""
-
+#run apps
 npm run start:dev

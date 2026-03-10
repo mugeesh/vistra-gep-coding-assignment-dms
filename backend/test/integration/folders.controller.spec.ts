@@ -125,6 +125,7 @@ describe('FoldersController (integration)', () => {
         it('should create a folder with valid DTO', async () => {
             const createDto = {
                 name: 'New Team Folder',
+                createdBy: "John Green",
                 parentId: 3,
             };
 
@@ -132,6 +133,7 @@ describe('FoldersController (integration)', () => {
                 id: 100,
                 name: 'New Team Folder',
                 parentId: 3,
+                createdBy: "John Green",
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -147,6 +149,7 @@ describe('FoldersController (integration)', () => {
                 id: 100,
                 name: 'New Team Folder',
                 parentId: 3,
+                createdBy: "John Green",
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
             });
@@ -154,6 +157,7 @@ describe('FoldersController (integration)', () => {
             expect(foldersServiceMock.create).toHaveBeenCalledWith({
                 name: 'New Team Folder',
                 parentId: 3,
+                createdBy: "John Green",
             });
         });
 
@@ -166,6 +170,7 @@ describe('FoldersController (integration)', () => {
                 id: 101,
                 name: 'Archive 2026',
                 parentId: null,
+                createdBy: "John Green",
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -181,6 +186,7 @@ describe('FoldersController (integration)', () => {
                 id: 101,
                 name: 'Archive 2026',
                 parentId: null,
+                createdBy: "John Green",
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
             });
@@ -222,6 +228,7 @@ describe('FoldersController (integration)', () => {
                 id: 1,
                 name: 'Renamed Folder',
                 parentId: 3,
+                createdBy: "John Green",
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };

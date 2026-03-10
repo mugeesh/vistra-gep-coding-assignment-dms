@@ -50,6 +50,7 @@ describe('DocumentsController (integration)', () => {
                 ...createDto,
                 createdAt: new Date(),
                 updatedAt: new Date(),
+                createdBy: "John Green",
             };
 
             jest.spyOn(documentsService, 'createDocument').mockResolvedValue(mockCreatedDocument);
@@ -88,6 +89,7 @@ describe('DocumentsController (integration)', () => {
                 ...createDto,
                 folderId: null,
                 description: null,
+                createdBy: "John Green",
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };

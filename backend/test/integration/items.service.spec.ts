@@ -34,7 +34,7 @@ describe('ItemsService', () => {
         it('should return folders and documents from specific parentId', async () => {
             // Mock Prisma responses
             prismaMock.folder.findMany.mockResolvedValue([
-                { id: 1, name: 'HR', parentId: null, createdAt: new Date(), updatedAt: new Date() },
+                { id: 1, name: 'HR', parentId: null, createdAt: new Date(), updatedAt: new Date(),createdBy: null },
             ]);
 
             prismaMock.document.findMany.mockResolvedValue([
@@ -46,6 +46,7 @@ describe('ItemsService', () => {
                     fileName: 'handbook.pdf',
                     mimeType: 'pdf',
                     sizeBytes: 5000,
+                    createdBy: null,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
@@ -86,8 +87,8 @@ describe('ItemsService', () => {
         it('should filter items client-side when search is provided and globalSearch=false', async () => {
             // Mock returns more items than needed
             prismaMock.folder.findMany.mockResolvedValue([
-                { id: 1, name: 'HR Documents', parentId: null, createdAt: new Date(), updatedAt: new Date() },
-                { id: 2, name: 'Finance', parentId: null, createdAt: new Date(), updatedAt: new Date() },
+                { id: 1, name: 'HR Documents', parentId: null, createdBy: null, createdAt: new Date(), updatedAt: new Date() },
+                { id: 2, name: 'Finance', parentId: null, createdBy: null, createdAt: new Date(), updatedAt: new Date() },
             ]);
 
             prismaMock.document.findMany.mockResolvedValue([]);
@@ -121,6 +122,7 @@ describe('ItemsService', () => {
                 folderId: 3,
                 title: 'Secret Plan',
                 description: null,
+                createdBy: null,
                 fileName: 'plan.pdf',
                 mimeType: 'pdf',
                 sizeBytes: 1000,

@@ -2,19 +2,52 @@
 
 set -euo pipefail
 
-echo "Starting Documents Management System (Backend + Frontend)"
+echo "  Documents Management Systems "
 
-# Start backend (includes MySQL via Docker)
+# 1. Start Backend and wait for it to be healthy
+echo "Step 1: Starting Backend (MySQL, Migrations, Seed)..."
 cd backend
-./start-api.sh &  # Run in background
+# update permission
+chmod +x start-api.sh
+./start-api.sh &
+BACKEND_PID=$!
 
-# Start frontend
+# 2. Wait for Backend port (3001) to be active
+echo "Waiting for Backend to respond on port 3001..."
+attempts=0
+until curl -s http://localhost:3001/api/docs > /dev/null; do
+  attempts=$((attempts + 1))
+  if [ $attempts -ge 60 ]; then
+    echo " Error: Backend failed to start in time."
+    kill $BACKEND_PID
+    exit 1
+  fi
+  sleep 2
+done
+
+echo "Backend is healthy!"
+
+# 3. Start Frontend
+echo "Step 2: Starting Frontend..."
 cd ../frontend
-cp .env.example .env
+
+# Auto-copy env if missing
+if [[ ! -f ".env" ]]; then
+  cp .env.example .env
+fi
 
 npm install
-
 npm run dev &
+FRONTEND_PID=$!
 
-# Wait for processes
+# 4. Handle Shutdown
+trap "kill $BACKEND_PID $FRONTEND_PID" EXIT
+
+echo "===================================================="
+echo "SYSTEM READY"
+echo "Backend: http://localhost:3001"
+echo "Swagger: http://localhost:3001/api/docs"
+echo "Frontend: http://localhost:3000"
+echo "===================================================="
+
 wait

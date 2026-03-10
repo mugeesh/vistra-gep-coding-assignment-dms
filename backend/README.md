@@ -1,59 +1,96 @@
-# DMS API (NestJS)
+# Document Management System - Backend API
 
-## Development Quick Start
-Add this to your README.md (makes it super professional):
-Markdown## Development Quick Start
+**NestJS** + **Prisma** + **MySQL** + **Docker**
 
-1. Install dependencies
-   ```bash
-   npm install
+Simple REST API for managing folders, documents, and a combined item view (folders + documents in one parent).
 
-Start the full stack (MySQL + Prisma + NestJS)Bashnpm run dev:all
-Reset database + restart (when you need a clean slate)Bashnpm run dev:reset
+## Features
 
-Access:
+- Folder CRUD operations
+- Document CRUD operations
+- Combined `/items` endpoint (folders + documents in a parent folder)
+- Swagger API documentation
+- Adminer web interface for database inspection
+- Jest integration & E2E tests
+- Dockerized MySQL database
 
-API: http://localhost:3000
-Swagger: http://localhost:3000/api/docs
-Adminer (DB GUI): http://localhost:8080
-Server: mysql
-User: root
-Password: rootPassword
-Database: document_management_systems
+## Tech Stack
 
+- **Framework**: NestJS
+- **ORM**: Prisma
+- **Database**: MySQL
+- **Containerization**: Docker + Docker Compose
+- **API Documentation**: Swagger / OpenAPI
+- **Testing**: Jest
 
-textNow your project is **very easy to run** — just `npm run dev:all` and everything works.
+## Quick Start
 
-If you want to add:
-- Auto-open browser
-- Check if Docker is running
-- Windows compatibility
+### Prerequisites
 
-Let me know — I can tweak the script further.  
-Otherwise, you're ready to share! 🚀
+- Node.js ≥ 22
+- npm
+- Docker & Docker Compose
 
-
-old contents
-
-
-Backend for the Document Management System: folders, documents, and combined items endpoints.
-
-- **Setup & run**: See root **[SETUP.md](../../SETUP.md)** and root **[README.md](../../README.md)**. Env (including `PORT` and `DATABASE_URL`) is read from **root `.env`** when present, then from `apps/api/.env`.
-- **API behavior**: **[API_README.md](./API_README.md)** — endpoints, DTOs, validation, and module layout.
-
-## Commands (from this folder)
+###  Setup
 
 ```bash
-npm install
-npm run prisma:migrate:dev -- --name <name>
-npm run prisma:seed
-npm run start:dev
-```
+    # 1. Clone repository 
+    git clone https://github.com/mugeesh/vistra-gep-coding-assignment-dms.git
+    cd backend
+    
+    # 2. Copy environment
+    cp .env.example .env
+    
+    # 3. Start database (MySQL)
+    docker compose up -d
+    
+    # Wait ~10–20 seconds, then verify
+    docker ps
+  # You should see mysql and adminer containers running
+  ```
+### Install & Run Development Server
+    
+```bash
+    npm install
+    
+    # Generate Prisma client
+    npx prisma generate
+    
+    # (Optional but recommended) Seed test data
+    npm run prisma:seed
+    
+    # Start the server in watch mode
+    npm run start:dev
+  ```
+API should now be available at: http://localhost:3001
 
-## Structure
+### Available Services
 
-- `src/folders` — `GET/POST /folders`
-- `src/documents` — `GET/POST /documents`
-- `src/items` — `GET /items` (folders + documents for one parent)
-- `src/prisma` — DB connection
-- `src/common` — shared helpers (e.g. `parseOptionalInt`)
+
+1. make sure running port is 30001
+2. API: http://localhost:3001
+3. Swagger: http://localhost:3001/api/docs
+4. Adminer (DB GUI): http://localhost:8080
+5. Server: mysql
+6. User: root
+7. Password: rootPassword
+8. Database: document_management_systems
+
+### Running Tests
+**Run Test case**
+```bash 
+    npm run test
+    
+    > backend-api@1.0.0 test
+    > jest --config jest.config.js
+    
+     PASS  test/integration/items.service.spec.ts
+     PASS  test/integration/documents.controller.spec.ts
+     PASS  test/integration/folders.controller.spec.ts
+    
+    Test Suites: 3 passed, 3 total
+    Tests:       21 passed, 21 total
+    Snapshots:   0 total
+    Time:        2.923 s, estimated 3 s
+    Ran all test suites.
+   ```
