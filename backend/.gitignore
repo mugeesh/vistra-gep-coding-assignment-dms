@@ -4,6 +4,9 @@
 /build
 .env
 /.env
+./dist
+dist
+backend/dist
 # Logs
 logs
 *.log
@@ -20,7 +23,6 @@ node_module
 /coverage
 /.nyc_output
 ./coverage
-
 # IDEs and editors
 /.idea
 .project

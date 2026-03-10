@@ -1,25 +1,33 @@
-import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class FoldersService {
   constructor(private readonly prisma: PrismaService) {}
 
-    async findAllByParent(parentId: number | null) {
-        return this.prisma.folder.findMany({
-            where: { parentId },
-            orderBy: [{ name: 'asc' }, { id: 'asc' }],
-            select: {
-                id: true,
-                name: true,
-                parentId: true,
-                createdAt: true,
-                updatedAt: true
-            },
-        });
-    }
+  async findAllByParent(parentId: number | null) {
+    return this.prisma.folder.findMany({
+      where: { parentId },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      select: {
+        id: true,
+        name: true,
+        parentId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
 
-  async create(input: { name: string; parentId: number | null;  createdBy: string | '-' }) {
+  async create(input: {
+    name: string;
+    parentId: number | null;
+    createdBy: string | null;
+  }) {
     if (input.parentId !== null) {
       const parent = await this.prisma.folder.findUnique({
         where: { id: input.parentId },
@@ -53,17 +61,16 @@ export class FoldersService {
     });
   }
 
-    async remove(id: number): Promise<void> {
-        const exists = await this.prisma.folder.findUnique({
-            where: { id },
-            select: { id: true },
-        });
+  async remove(id: number): Promise<void> {
+    const exists = await this.prisma.folder.findUnique({
+      where: { id },
+      select: { id: true },
+    });
 
-        if (!exists) {
-            throw new NotFoundException('Folder not found');
-        }
-
-        await this.prisma.folder.delete({ where: { id } });
+    if (!exists) {
+      throw new NotFoundException('Folder not found');
     }
-}
 
+    await this.prisma.folder.delete({ where: { id } });
+  }
+}

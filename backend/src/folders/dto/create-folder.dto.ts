@@ -1,23 +1,35 @@
-import {IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min} from 'class-validator';
-import {Transform, Type} from 'class-transformer';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 const NAME_MAX_LENGTH = 191;
 
 export class CreateFolderDto {
-    @Transform(({value}) => (typeof value === 'string' ? value.trim() : value))
-    @IsString()
-    @IsNotEmpty({ message: 'Name is required' })
-    @MaxLength(NAME_MAX_LENGTH)
-    name!: string;
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
+  @IsString()
+  @IsNotEmpty({ message: 'Name is required' })
+  @MaxLength(NAME_MAX_LENGTH)
+  name!: string;
 
-    @IsOptional()
-    @IsInt({message: 'parentId must be a valid integer'})
-    @Min(1, {message: 'parentId must be a positive integer starting from 1'})
-    @Type(() => Number)
-    parentId?: number | null;
+  @IsOptional()
+  @IsInt({ message: 'parentId must be a valid integer' })
+  @Min(1, { message: 'parentId must be a positive integer starting from 1' })
+  @Type(() => Number)
+  parentId?: number | null;
 
-    @IsOptional()
-    @IsString()
-    @MaxLength(NAME_MAX_LENGTH)
-    createdBy?: string | null;
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
+  @IsOptional()
+  @IsString()
+  @MaxLength(NAME_MAX_LENGTH)
+  createdBy?: string | null;
 }

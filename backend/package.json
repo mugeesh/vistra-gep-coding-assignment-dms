@@ -6,8 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "dev:all": "./../start-dev.sh",
-    "dev:reset": "docker compose down -v && ../start-dev.sh",
+    "dev:all": "./start-api.sh",
+    "dev:reset": "docker compose down -v && ./start-api.sh",
     "prisma:fresh": "npx prisma migrate reset --force && npx prisma migrate dev --name init",
     "prisma:dev": "npx prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",
@@ -19,7 +19,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -61,6 +61,7 @@
     "dotenv": "^16.4.5",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-jest": "^29.15.0",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
     "jest": "^30.0.0",
@@ -75,22 +76,5 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }

@@ -27,6 +27,7 @@ This project implements a basic Documents Management System as per the Vistra GE
 - No real file uploads — simulates records (name, type, size, createdBy, etc.)
 - Supports nested folders/documents
 - Basic CRUD + search functionality
+- Code is clean, well-structured, and follows best practices
 
 ## Features
 
@@ -169,7 +170,7 @@ npm run test
 
 
 **======= Test results ==========**
-backend % npm run test
+mugeesh@mugeesh backend % npm run test
 
 > backend-api@1.0.0 test
 > jest --config jest.config.js
@@ -177,34 +178,38 @@ backend % npm run test
  PASS  test/integration/items.service.spec.ts
  PASS  test/integration/documents.controller.spec.ts
  PASS  test/integration/folders.controller.spec.ts
+ PASS  test/integration/items.controller.spec.ts
 --------------------------|---------|----------|---------|---------|----------------------
 File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s    
 --------------------------|---------|----------|---------|---------|----------------------
-All files                 |   61.13 |    27.41 |   55.81 |   58.25 |                      
+All files                 |    62.5 |    34.72 |   52.94 |   61.11 |                      
+ common                   |      55 |      100 |       0 |   73.33 |                      
+  list-items-query.dto.ts |      55 |      100 |       0 |   73.33 | 12,23,36,76          
  documents                |   43.85 |    11.11 |      20 |   38.77 |                      
-  documents.controller.ts |   45.16 |       20 |      40 |   44.44 | 28,44-46,55-60,66-73 
+  documents.controller.ts |   45.16 |       20 |      40 |   44.44 | 27,43-45,54-59,65-72 
   documents.module.ts     |     100 |      100 |     100 |     100 |                      
-  documents.service.ts    |      25 |        0 |       0 |   16.66 | 6-70                 
- documents/dto            |   91.66 |    33.33 |   71.42 |   91.66 |                      
-  create-document.dto.ts  |   94.11 |       40 |   83.33 |   94.11 | 42                   
-  update-document.dto.ts  |   85.71 |        0 |       0 |   85.71 | 7                    
+  documents.service.ts    |      25 |        0 |       0 |   16.66 | 6-69                 
+ documents/dto            |      88 |    28.57 |    62.5 |      88 |                      
+  create-document.dto.ts  |   94.11 |       40 |   83.33 |   94.11 | 58                   
+  update-document.dto.ts  |      75 |        0 |       0 |      75 | 8,16                 
  folders                  |   56.89 |    26.92 |      50 |   51.92 |                      
   folders.controller.ts   |   68.75 |    38.88 |     100 |   66.66 | 38-42,56-60,76-77    
   folders.module.ts       |     100 |      100 |     100 |     100 |                      
-  folders.service.ts      |      25 |        0 |       0 |   16.66 | 6-66                 
+  folders.service.ts      |      25 |        0 |       0 |   16.66 | 10-74                
  folders/dto              |     100 |       50 |     100 |     100 |                      
-  create-folder.dto.ts    |     100 |       50 |     100 |     100 | 7                    
+  create-folder.dto.ts    |     100 |       50 |     100 |     100 | 15-29                
   update-folder.dto.ts    |     100 |       50 |     100 |     100 | 7                    
- items                    |   68.51 |    32.75 |     100 |   65.95 |                      
-  items.service.ts        |   68.51 |    32.75 |     100 |   65.95 | 20-22,34-52          
+ items                    |   74.62 |    45.94 |     100 |   72.41 |                      
+  items.controller.ts     |     100 |    93.75 |     100 |     100 | 34                   
+  items.service.ts        |   68.51 |    32.75 |     100 |   65.95 | 21-23,42-62          
  prisma                   |   31.57 |        0 |       0 |   23.52 |                      
-  prisma.service.ts       |   31.57 |        0 |       0 |   23.52 | 6-13,27-53           
+  prisma.service.ts       |   31.57 |        0 |       0 |   23.52 | 6-13,28-54           
 --------------------------|---------|----------|---------|---------|----------------------
 
-Test Suites: 3 passed, 3 total
-Tests:       21 passed, 21 total
+Test Suites: 4 passed, 4 total
+Tests:       25 passed, 25 total
 Snapshots:   0 total
-Time:        2.923 s, estimated 3 s
+Time:        3.514 s, estimated 4 s
 Ran all test suites.
 ```
-2.    
+2. Frontend test case    
