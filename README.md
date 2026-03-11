@@ -57,10 +57,14 @@ chmod +x start-all.sh
 ```
 This starts the database, backend, and frontend automatically. 
 Access at:
-- http://localhost:3000/ (Frontend)
-- http://localhost:3001/api/docs (Swagger)
+- Frontend UI: http://localhost:3000
+- API Docs (Swagger): http://localhost:3001/api/docs
+> [!IMPORTANT]
+>
+> **Port Availability:** Ensure ports 3000 and 3001 are available. If these ports are already in use, you can update the PORT or BACKEND_URL variables in the .env files located in the /backend and /frontend directories.
 
 This starts the database, backend, and frontend automatically.
+
 
 ## Manual Setup
 1. **Start the Database (MySQL via Docker)**
