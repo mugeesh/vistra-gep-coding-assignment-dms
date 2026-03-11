@@ -42,7 +42,7 @@ docker rm -f mysql 2>/dev/null || true
 
 # 2. Start MySQL
 echo "2. Starting MySQL container..."
-docker compose up -d mysql
+docker compose up -d
 
 # 3. Wait for MySQL to be ready
 echo "3. Waiting for MySQL to be fully ready (max 60 seconds)..."

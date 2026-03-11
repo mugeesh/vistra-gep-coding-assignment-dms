@@ -72,7 +72,7 @@ This starts the database, backend, and frontend automatically.
 1. **Start the Database (MySQL via Docker)**
    ```bash
     cd backend
-    docker compose up -d mysql
+    docker compose up -d
    ```
    Wait 10-20 seconds, then verify with docker ps (should show MySQL and Adminer containers).
 2. **Backend api setup:**
@@ -121,7 +121,7 @@ Once the application is running:
     - Server: `mysql`
     - Username: `root`
     - Password: `rootPassword`
-    - Database: `document_management_system`
+    - Database: `document_management_systems`
 
 ## Database & Reset
 - Schema: Defined in `backend/prisma/schema.prisma` (self-referencing parentId for hierarchy).
