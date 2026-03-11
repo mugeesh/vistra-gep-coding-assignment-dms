@@ -3,6 +3,27 @@
 set -euo pipefail
 
 echo "  Documents Management Systems "
+# Function to kill process on a specific port (continues on error)
+kill_port() {
+  local port=$1
+  local pid=$(lsof -ti:$port 2>/dev/null || true)
+
+  if [ -n "$pid" ]; then
+    echo "Port $port is in use by PID $pid. Attempting to kill..."
+    # Try kill, but continue even if it fails
+    kill -9 $pid 2>/dev/null || true
+    sleep 1
+  else
+    echo "Port $port is available."
+  fi
+}
+
+# Kill processes on ports 3000 and 3001 if running
+echo "Checking and freeing required ports..."
+kill_port 3001 || true
+kill_port 3000 || true
+
+echo "===================================================="
 
 # 1. Start Backend and wait for it to be healthy
 echo "Step 1: Starting Backend (MySQL, Migrations, Seed)..."
@@ -31,9 +52,16 @@ echo "Backend is healthy!"
 echo "Step 2: Starting Frontend..."
 cd ../frontend
 
-# Auto-copy env if missing
+# Copy env.example file if it doesn't exist
 if [[ ! -f ".env" ]]; then
-  cp .env.example .env
+  if [[ -f ".env.example" ]]; then
+    echo "Copying env to .env..."
+    cp .env.example .env
+  else
+    echo "Warning: 'env' file not found. You may need to create .env manually."
+  fi
+else
+  echo ".env file already exists — skipping copy."
 fi
 
 npm install
