@@ -10,8 +10,6 @@ jest-coverage/
 
 # Environment and local files
 .env
-.env.local
-.env.*
 
 # Node modules (already standard)
 node_modules/

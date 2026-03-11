@@ -62,7 +62,8 @@ Access at:
 > [!IMPORTANT]
 >
 > * **Port Availability:** Ensure ports 3000 and 3001 are available. If these ports are already in use, you can update the PORT or BACKEND_URL variables in the .env files located in the /backend and /frontend directories.
-> * **this start-all.sh compatible with Mac PC**, for other please follow Manual Setup 
+> * **this start-all.sh compatible with Mac PC**, for other please follow Manual Setup
+> * if error running start-all.sh script please follow manual setup steps
 
 This starts the database, backend, and frontend automatically.
 
@@ -70,6 +71,7 @@ This starts the database, backend, and frontend automatically.
 ## Manual Setup
 1. **Start the Database (MySQL via Docker)**
    ```bash
+    cd backend
     docker compose up -d mysql
    ```
    Wait 10-20 seconds, then verify with docker ps (should show MySQL and Adminer containers).
@@ -79,7 +81,7 @@ This starts the database, backend, and frontend automatically.
     cp .env.example .env
     npm install
     npx prisma generate
-    npx prisma migrate deploy
+    npx prisma db push
     
     # Optional: Load seed data
     npm run prisma:seed
@@ -91,16 +93,12 @@ This starts the database, backend, and frontend automatically.
 3. **Frontend Setup:**
     ```bash
     cd frontend
+    cp .env.example .env
     npm install
     npm run dev
     ```
       Bash
 
-4. **Load test seed data** 
-    ```bash
-    cd backend 
-    npm run prisma:seed
-    ```
 
 ## Access Points
 

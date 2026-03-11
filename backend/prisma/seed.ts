@@ -21,7 +21,7 @@ function getDatabaseConfigFromUrl(databaseUrl: string): DatabaseConfig {
         const database = url.pathname.replace(/^\//, "");
 
         if (!database) {
-            throw new Error("Database name is required in URL (e.g., mysql://root:rootPassword@localhost:3306/document_management_systems)");
+            throw new Error("Database name is required in URL (e.g., mysql://XXX:XXX@localhost:3306/document_management_systems)");
         }
 
         return {
