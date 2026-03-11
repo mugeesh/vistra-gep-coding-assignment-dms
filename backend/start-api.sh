@@ -98,4 +98,4 @@ echo "    → Swagger: http://localhost:3001/api/docs"
 echo "    → Press Ctrl+C to stop"
 echo ""
 #run apps
-npm run start
+npm run start:dev
